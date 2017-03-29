@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.ActorMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.Actor" type="com.fun.likechat.po.Actor">
+		<result property="id" column="id"/>
+		<result property="idcard" column="idcard"/>
+		<result property="name" column="name"/>
+		<result property="nickname" column="nickname"/>
+		<result property="recommend" column="recommend"/>
+		<result property="fans" column="fans"/>
+		<result property="attention" column="attention"/>
+		<result property="icon" column="icon"/>
+		<result property="signature" column="signature"/>
+		<result property="introduction" column="introduction"/>
+		<result property="price" column="price"/>
+		<result property="showTime" column="show_time"/>
+		<result property="state" column="state"/>
+		<result property="sex" column="sex"/>
+		<result property="birthday" column="birthday"/>
+		<result property="provice" column="provice"/>
+		<result property="city" column="city"/>
+		<result property="profession" column="profession"/>
+		<result property="hight" column="hight"/>
+		<result property="weight" column="weight"/>
+		<result property="blogurl" column="blogurl"/>
+		<result property="phone" column="phone"/>
+		<result property="qq" column="qq"/>
+		<result property="wechat" column="wechat"/>
+		<result property="creator" column="creator"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,idcard,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,state,sex,birthday,provice,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_actor (
+        	id,
+        	idcard,
+        	name,
+        	nickname,
+        	recommend,
+        	fans,
+        	attention,
+        	icon,
+        	signature,
+        	introduction,
+        	price,
+        	show_time,
+        	state,
+        	sex,
+        	birthday,
+        	provice,
+        	city,
+        	profession,
+        	hight,
+        	weight,
+        	blogurl,
+        	phone,
+        	qq,
+        	wechat,
+        	creator,
+        	create_time,
+        	update_time
+        ) VALUES (
+        	#{id},
+        	#{idcard},
+        	#{name},
+        	#{nickname},
+        	#{recommend},
+        	#{fans},
+        	#{attention},
+        	#{icon},
+        	#{signature},
+        	#{introduction},
+        	#{price},
+        	#{showTime},
+        	#{state},
+        	#{sex},
+        	#{birthday},
+        	#{provice},
+        	#{city},
+        	#{profession},
+        	#{hight},
+        	#{weight},
+        	#{blogurl},
+        	#{phone},
+        	#{qq},
+        	#{wechat},
+        	#{creator},
+        	#{createTime},
+        	#{updateTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.Actor">
+        UPDATE t_actor 
+		<set>
+	        <if test="idcard != null">
+	        	idcard = #{idcard},
+	        </if>
+	        <if test="name != null">
+	        	name = #{name},
+	        </if>
+	        <if test="nickname != null">
+	        	nickname = #{nickname},
+	        </if>
+	        <if test="recommend != null">
+	        	recommend = #{recommend},
+	        </if>
+	        <if test="fans != null">
+	        	fans = #{fans},
+	        </if>
+	        <if test="attention != null">
+	        	attention = #{attention},
+	        </if>
+	        <if test="icon != null">
+	        	icon = #{icon},
+	        </if>
+	        <if test="signature != null">
+	        	signature = #{signature},
+	        </if>
+	        <if test="introduction != null">
+	        	introduction = #{introduction},
+	        </if>
+	        <if test="price != null">
+	        	price = #{price},
+	        </if>
+	        <if test="showTime != null">
+	        	show_time = #{showTime},
+	        </if>
+	        <if test="state != null">
+	        	state = #{state},
+	        </if>
+	        <if test="sex != null">
+	        	sex = #{sex},
+	        </if>
+	        <if test="birthday != null">
+	        	birthday = #{birthday},
+	        </if>
+	        <if test="provice != null">
+	        	provice = #{provice},
+	        </if>
+	        <if test="city != null">
+	        	city = #{city},
+	        </if>
+	        <if test="profession != null">
+	        	profession = #{profession},
+	        </if>
+	        <if test="hight != null">
+	        	hight = #{hight},
+	        </if>
+	        <if test="weight != null">
+	        	weight = #{weight},
+	        </if>
+	        <if test="blogurl != null">
+	        	blogurl = #{blogurl},
+	        </if>
+	        <if test="phone != null">
+	        	phone = #{phone},
+	        </if>
+	        <if test="qq != null">
+	        	qq = #{qq},
+	        </if>
+	        <if test="wechat != null">
+	        	wechat = #{wechat},
+	        </if>
+	        <if test="creator != null">
+	        	creator = #{creator},
+	        </if>
+	        <if test="createTime != null">
+	        	create_time = #{createTime},
+	        </if>
+	        <if test="updateTime != null">
+	        	update_time = #{updateTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_actor WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.Actor">
+		SELECT
+			*
+		FROM
+			t_actor 
+	    WHERE
+	        id = #{id} 
+	</select>
+	
+	<select id="randomActors" resultType="com.fun.likechat.persistence.po.Actor">
+		SELECT
+			*
+		FROM
+			t_actor 
+	    ORDER BY 
+	    	RAND()  LIMIT ${limit}
+	</select>	
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="idcard != null">
+				AND idcard = #{idcard}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="nickname != null">
+				AND nickname = #{nickname}
+			</if>
+			<if test="recommend != null">
+				AND recommend = #{recommend}
+			</if>
+			<if test="fans != null">
+				AND fans = #{fans}
+			</if>
+			<if test="attention != null">
+				AND attention = #{attention}
+			</if>
+			<if test="icon != null">
+				AND icon = #{icon}
+			</if>
+			<if test="signature != null">
+				AND signature = #{signature}
+			</if>
+			<if test="introduction != null">
+				AND introduction = #{introduction}
+			</if>
+			<if test="price != null">
+				AND price = #{price}
+			</if>
+			<if test="showTime != null">
+				AND show_time = #{showTime}
+			</if>
+			<if test="state != null">
+				AND state = #{state}
+			</if>
+			<if test="sex != null">
+				AND sex = #{sex}
+			</if>
+			<if test="birthday != null">
+				AND birthday = #{birthday}
+			</if>
+			<if test="provice != null">
+				AND provice = #{provice}
+			</if>
+			<if test="city != null">
+				AND city = #{city}
+			</if>
+			<if test="profession != null">
+				AND profession = #{profession}
+			</if>
+			<if test="hight != null">
+				AND hight = #{hight}
+			</if>
+			<if test="weight != null">
+				AND weight = #{weight}
+			</if>
+			<if test="blogurl != null">
+				AND blogurl = #{blogurl}
+			</if>
+			<if test="phone != null">
+				AND phone = #{phone}
+			</if>
+			<if test="qq != null">
+				AND qq = #{qq}
+			</if>
+			<if test="wechat != null">
+				AND wechat = #{wechat}
+			</if>
+			<if test="creator != null">
+				AND creator = #{creator}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+			<if test="updateTime != null">
+				AND update_time = #{updateTime}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="idcard != null">
+				AND idcard = #{idcard}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="nickname != null">
+				AND nickname = #{nickname}
+			</if>
+			<if test="recommend != null">
+				AND recommend = #{recommend}
+			</if>
+			<if test="fans != null">
+				AND fans = #{fans}
+			</if>
+			<if test="attention != null">
+				AND attention = #{attention}
+			</if>
+			<if test="icon != null">
+				AND icon = #{icon}
+			</if>
+			<if test="signature != null">
+				AND signature = #{signature}
+			</if>
+			<if test="introduction != null">
+				AND introduction = #{introduction}
+			</if>
+			<if test="price != null">
+				AND price = #{price}
+			</if>
+			<if test="showTime != null">
+				AND show_time = #{showTime}
+			</if>
+			<if test="state != null">
+				AND state = #{state}
+			</if>
+			<if test="sex != null">
+				AND sex = #{sex}
+			</if>
+			<if test="provice != null">
+				AND provice = #{provice}
+			</if>
+			<if test="city != null">
+				AND city = #{city}
+			</if>
+			<if test="profession != null">
+				AND profession = #{profession}
+			</if>
+			<if test="hight != null">
+				AND hight = #{hight}
+			</if>
+			<if test="weight != null">
+				AND weight = #{weight}
+			</if>
+			<if test="blogurl != null">
+				AND blogurl = #{blogurl}
+			</if>
+			<if test="phone != null">
+				AND phone = #{phone}
+			</if>
+			<if test="qq != null">
+				AND qq = #{qq}
+			</if>
+			<if test="wechat != null">
+				AND wechat = #{wechat}
+			</if>
+			<if test="creator != null">
+				AND creator = #{creator}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_actor
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.Actor">
+		SELECT 
+			*
+		FROM
+			t_actor 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.Actor" resultType="com.fun.likechat.persistence.po.Actor">
+		SELECT 
+			*
+		FROM 
+			t_actor 
+	    <include refid="whereForPo" />
+	</select>
+</mapper>
+
