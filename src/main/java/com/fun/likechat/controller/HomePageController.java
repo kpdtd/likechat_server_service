@@ -54,6 +54,34 @@ public class HomePageController extends BaseController {
 		}
 		return ActionResult.fail();
 	}
+	
+
+	/**
+	 * 获取chat 首页数据
+	 * @param
+	 * @return
+	 */
+	@RequestMapping(value = "getActorList", method = RequestMethod.POST)
+	public @ResponseBody ActionResult getActorList() {
+		try {
+			// 1、获取tag列表
+			List<Tag> tags = homePageLogic.getAllSystemTag();
+			// 2、获取banner,banner是用频道来描述的；
+			List<Column> banner = homePageLogic.getSubColumnsById("banner");
+			// 3、获取全部主播列表
+			List<Actor> actors = homePageLogic.getRandomActors();
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("tags", tags);
+			map.put("banner", banner);
+			map.put("actors", actors);
+			return ActionResult.success(map);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ActionResult.fail();
+	}	
 
 	/**
 	 * 用户详情页信息
