@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.fun.likechat.constant.Constant;
 import com.fun.likechat.interceptor.ActionResult;
 import com.fun.likechat.logic.HomePageLogic;
-import com.fun.likechat.persistence.po.Actor;
-import com.fun.likechat.persistence.po.Column;
-import com.fun.likechat.persistence.po.Tag;
 import com.fun.likechat.util.JsonHelper;
+import com.fun.likechat.vo.ActorVo;
+import com.fun.likechat.vo.BannerVo;
+import com.fun.likechat.vo.TagVo;
 
 /**
  * chat 首页栏目
@@ -29,7 +31,7 @@ public class HomePageController extends BaseController {
 	HomePageLogic homePageLogic;
 
 	/**
-	 * 获取chat 首页数据
+	 * 打开app时第一次获取 首页数据
 	 * @param
 	 * @return
 	 */
@@ -37,16 +39,16 @@ public class HomePageController extends BaseController {
 	public @ResponseBody ActionResult getHomePageContent() {
 		try {
 			// 1、获取tag列表
-			List<Tag> tags = homePageLogic.getAllSystemTag();
+			List<TagVo> tagsVo = homePageLogic.getAllSystemTagVo();
 			// 2、获取banner,banner是用频道来描述的；
-			List<Column> banner = homePageLogic.getSubColumnsById("banner");
-			// 3、获取全部主播列表
-			List<Actor> actors = homePageLogic.getRandomActors();
+			List<BannerVo> bannerVo = homePageLogic.getBannerListVo("banner");
+			// 3、获取随机（20个）主播列表，每次刷新都是随机20个
+			List<ActorVo> actorsVo = homePageLogic.getRandomActorsVo(Constant.ACTOR_RANDOM_LIMIT);
 
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("tags", tags);
-			map.put("banner", banner);
-			map.put("actors", actors);
+			map.put("tagsVo", tagsVo);
+			map.put("bannerVo", bannerVo);
+			map.put("actorsVo", actorsVo);
 			return ActionResult.success(map);
 		}
 		catch(Exception e) {
@@ -57,24 +59,29 @@ public class HomePageController extends BaseController {
 	
 
 	/**
-	 * 获取chat 首页数据
+	 * 根据tag条件随机获取20条主播列表
 	 * @param
 	 * @return
 	 */
-	@RequestMapping(value = "getActorList", method = RequestMethod.POST)
-	public @ResponseBody ActionResult getActorList() {
+	@RequestMapping(value = "getActorListByTag", method = RequestMethod.POST)
+	public @ResponseBody ActionResult getActorListByTag(@RequestBody String body) {
 		try {
-			// 1、获取tag列表
-			List<Tag> tags = homePageLogic.getAllSystemTag();
-			// 2、获取banner,banner是用频道来描述的；
-			List<Column> banner = homePageLogic.getSubColumnsById("banner");
-			// 3、获取全部主播列表
-			List<Actor> actors = homePageLogic.getRandomActors();
-
+			JSONObject json = JsonHelper.toJsonObject(body);
+			String identifying = json.getString("identifying");//获取是否点击标签：温柔等
+			int limit = Constant.ACTOR_RANDOM_LIMIT;
+			List<ActorVo> actorsVo = null;
+			
+			if(StringUtils.isEmpty(identifying) || "ALL".equals(identifying)) {//如果是"全部"(tag的identifying不填写或写成固定ALL)直接随机20条数据
+				actorsVo = homePageLogic.getRandomActorsVo(limit);
+			}else {//别的，根据tag标签条件连表获取
+				Map<String, Object> condition = new HashMap<String, Object>();
+				condition.put("limit", limit);//
+				condition.put("identifying", identifying);
+				actorsVo = homePageLogic.getRandomActorsByCondition(condition);
+			}
+			
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("tags", tags);
-			map.put("banner", banner);
-			map.put("actors", actors);
+			map.put("actorsVo", actorsVo);
 			return ActionResult.success(map);
 		}
 		catch(Exception e) {
@@ -84,10 +91,10 @@ public class HomePageController extends BaseController {
 	}	
 
 	/**
-	 * 用户详情页信息
+	 * 主播详情页信息
 	 */
-	@RequestMapping(value = "getActorDetail", method = RequestMethod.POST)
-	public @ResponseBody ActionResult getAllAnchorRankingList() {
+	@RequestMapping(value = "getActorPage", method = RequestMethod.POST)
+	public @ResponseBody ActionResult getActorPage(@RequestBody String body) {
 		try {
 			// 1、获取主播详细信息：手机号、QQ号、微信号只有VIP用户可以看见，点击后直接跳转到会员中心进行充值VIP，并提示“只有VIP会员可见”，如果是未登录用户则跳转登录页面。
 

@@ -6,6 +6,7 @@
 	<!-- 根据情况定制属性列表
 	<resultMap id="RM.Tag" type="com.fun.likechat.po.Tag">
 		<result property="id" column="id"/>
+		<result property="identifying" column="identifying"/>
 		<result property="tagName" column="tagName"/>
 		<result property="pic" column="pic"/>
 		<result property="property" column="property"/>
@@ -18,7 +19,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,tagName,pic,property,state,creator,createTime
+		id,identifying,tagName,pic,property,state,creator,createTime
 	    ]]>
 	</sql>
 
@@ -26,6 +27,7 @@
     <![CDATA[
         INSERT INTO t_tag (
         	id,
+        	identifying,
         	tagName,
         	pic,
         	property,
@@ -34,6 +36,7 @@
         	createTime
         ) VALUES (
         	#{id},
+        	#{identifying},
         	#{tagName},
         	#{pic},
         	#{property},
@@ -47,9 +50,12 @@
 	<update id="update" parameterType="com.fun.likechat.persistence.po.Tag">
         UPDATE t_tag 
 		<set>
-	        <if test="tagName != null">
-	        	tagName = #{tagName},
+	        <if test="identifying != null">
+	        	identifying = #{identifying},
 	        </if>
+			<if test="tagName != null">
+	        	tagName = #{tagName},
+	        </if>	        
 	        <if test="pic != null">
 	        	pic = #{pic},
 	        </if>
@@ -90,6 +96,9 @@
 			<if test="id != null">
 				AND id = #{id}
 			</if>
+			<if test="identifying != null">
+				AND identifying = #{identifying}
+			</if>			
 			<if test="tagName != null">
 				AND tagName = #{tagName}
 			</if>
@@ -115,6 +124,9 @@
 		<where>
 			<if test="id != null">
 				AND id = #{id}
+			</if>
+			<if test="identifying != null">
+				AND identifying = #{identifying}
 			</if>
 			<if test="tagName != null">
 				AND tagName = #{tagName}

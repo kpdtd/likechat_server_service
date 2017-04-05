@@ -2,6 +2,7 @@ package com.fun.likechat.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.fun.likechat.persistence.po.Actor;
 /** 
@@ -10,7 +11,7 @@ import com.fun.likechat.persistence.po.Actor;
  * 功能描述: 
  */
 public interface ActorService extends CommonService<Actor> {
-
 	List<Actor> getRandomActors(int limit) throws SQLException;
+	List<Actor> getRandomActorsByCondition(Map<String, Object> map) throws SQLException;
 
 }

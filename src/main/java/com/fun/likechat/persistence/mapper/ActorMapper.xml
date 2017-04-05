@@ -20,7 +20,7 @@
 		<result property="state" column="state"/>
 		<result property="sex" column="sex"/>
 		<result property="birthday" column="birthday"/>
-		<result property="provice" column="provice"/>
+		<result property="province" column="province"/>
 		<result property="city" column="city"/>
 		<result property="profession" column="profession"/>
 		<result property="hight" column="hight"/>
@@ -38,7 +38,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,idcard,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,state,sex,birthday,provice,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
+		id,idcard,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
 	    ]]>
 	</sql>
 
@@ -60,7 +60,7 @@
         	state,
         	sex,
         	birthday,
-        	provice,
+        	province,
         	city,
         	profession,
         	hight,
@@ -88,7 +88,7 @@
         	#{state},
         	#{sex},
         	#{birthday},
-        	#{provice},
+        	#{province},
         	#{city},
         	#{profession},
         	#{hight},
@@ -149,8 +149,8 @@
 	        <if test="birthday != null">
 	        	birthday = #{birthday},
 	        </if>
-	        <if test="provice != null">
-	        	provice = #{provice},
+	        <if test="province != null">
+	        	province = #{province},
 	        </if>
 	        <if test="city != null">
 	        	city = #{city},
@@ -204,15 +204,6 @@
 	        id = #{id} 
 	</select>
 	
-	<select id="randomActors" resultType="com.fun.likechat.persistence.po.Actor">
-		SELECT
-			*
-		FROM
-			t_actor 
-	    ORDER BY 
-	    	RAND()  LIMIT ${limit}
-	</select>	
-
 	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
 	<sql id="where">
 		<where>
@@ -261,8 +252,8 @@
 			<if test="birthday != null">
 				AND birthday = #{birthday}
 			</if>
-			<if test="provice != null">
-				AND provice = #{provice}
+			<if test="province != null">
+				AND province = #{province}
 			</if>
 			<if test="city != null">
 				AND city = #{city}
@@ -351,8 +342,8 @@
 			<if test="sex != null">
 				AND sex = #{sex}
 			</if>
-			<if test="provice != null">
-				AND provice = #{provice}
+			<if test="province != null">
+				AND province = #{province}
 			</if>
 			<if test="city != null">
 				AND city = #{city}
@@ -405,5 +396,27 @@
 			t_actor 
 	    <include refid="whereForPo" />
 	</select>
+	
+	<!-- 随机获取20条主播 -->
+	<select id="getRandomActors" resultType="com.fun.likechat.persistence.po.Actor">
+		SELECT
+			*
+		FROM
+			t_actor 
+	    ORDER BY 
+	    	RAND()  LIMIT ${limit}
+	</select>
+	
+	<!-- 根据tag标签条件随机获取20条主播 -->
+	<select id="getRandomActorsByCondition" resultType="com.fun.likechat.persistence.po.Actor">
+		SELECT
+			*
+		FROM
+			t_actor, t_r_actor_tag
+		WHERE
+			t_r_actor_tag.identifying = #{tag_identifying} and t_r_actor_tag.actor_id = t_actor.id
+	    ORDER BY 
+	    	RAND()  LIMIT ${limit}
+	</select>	
 </mapper>
 

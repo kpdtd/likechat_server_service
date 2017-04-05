@@ -57,5 +57,12 @@ public class ActorServiceImpl implements ActorService {
 		return actorMapper.getRandomActors(limit);
 	}
 	
+	@Override
+	public List<Actor> getRandomActorsByCondition(Map<String, Object> map) throws SQLException {
+		return actorMapper.getRandomActorsByCondition(map);
+	}
+	
+	
+	
 }
 

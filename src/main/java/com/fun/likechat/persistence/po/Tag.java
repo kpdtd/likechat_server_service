@@ -2,6 +2,7 @@ package com.fun.likechat.persistence.po;
 
 public class Tag {
 	private Integer id;
+	private String identifying;
 	private String tagName;
 	private String pic;
 	private Integer property;
@@ -58,5 +59,18 @@ public class Tag {
 	public java.util.Date getCreateTime() {
 		return this.createTime;
 	}
+
+	public String getIdentifying() {
+		return identifying;
+	}
+
+	public void setIdentifying(String identifying) {
+		this.identifying = identifying;
+	}
+
+	@Override
+    public String toString() {
+	    return "Tag [id=" + id + ", identifying=" + identifying + ", tagName=" + tagName + ", pic=" + pic + ", property=" + property + ", state=" + state + ", creator=" + creator + ", createTime=" + createTime + "]";
+    }
 }
 

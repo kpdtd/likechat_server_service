@@ -18,7 +18,7 @@ public class Actor {
 	private Integer state;//状态：1、账号生效   2、账号停用
 	private Integer sex;//1男2女
 	private java.util.Date birthday;//生日
-	private String provice;//省
+	private String province;//省
 	private String city;//城市
 	private String profession;//职业
 	private String hight;//身高
@@ -136,12 +136,12 @@ public class Actor {
 	public java.util.Date getBirthday() {
 		return this.birthday;
 	}
-	public void setProvice(String value) {
-		this.provice = value;
+	public void setprovince(String value) {
+		this.province = value;
 	}
 	
-	public String getProvice() {
-		return this.provice;
+	public String getprovince() {
+		return this.province;
 	}
 	public void setCity(String value) {
 		this.city = value;
