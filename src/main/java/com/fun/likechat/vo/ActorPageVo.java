@@ -23,7 +23,7 @@ public class ActorPageVo {
 	private String introduction;//自我介绍
 	
 	private String price;//资费价格（整数）转成 --》 1.5币/分
-	private String callTime;//通话时长
+//	private String callTime;//通话时长 --android自己获取
 	
 	
 	
@@ -102,14 +102,6 @@ public class ActorPageVo {
 
 	public void setPrice(String price) {
 		this.price = price;
-	}
-
-	public String getCallTime() {
-		return callTime;
-	}
-
-	public void setCallTime(String callTime) {
-		this.callTime = callTime;
 	}
 
 	public Integer getSex() {
