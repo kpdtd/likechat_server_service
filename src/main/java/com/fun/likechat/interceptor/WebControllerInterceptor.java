@@ -13,7 +13,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.fun.likechat.constant.Constant;
 import com.fun.likechat.constant.ErrCodeEnum;
 import com.fun.likechat.util.AESCrypto;
 import com.fun.likechat.util.JsonHelper;
@@ -47,7 +46,7 @@ public class WebControllerInterceptor extends HandlerInterceptorAdapter {
         // 验证信息
         boolean isSign = false;
         boolean isLog = true;
-        HeaderData header = null;
+       //HeaderData header = null;
         Method method = null;
         boolean isWeb = false;// 是否是web访问
         try {
@@ -56,28 +55,6 @@ public class WebControllerInterceptor extends HandlerInterceptorAdapter {
             // 设置context method
             context.setMethod(method);
             context.setClazz(handlerMethod.getBeanType());
-            String encrypt = request.getHeader(Constant.request_header_encrypt);// 请求头
-            if (encrypt != null && encrypt.length() > 0) {
-                String decodeValues = AESCrypto.decrypt(encrypt);
-                logger.debug("头信息解密之后的数据:" + decodeValues);
-                header = JsonHelper.toObject(decodeValues, HeaderData.class);
-            }
-            if (header != null) {
-                // 设置变量的其他数值
-                logger.debug("设置变量的其他数值,用户信息：" + header.getUserid());
-                context.setHeader(header);
-                context.setHeaderEncrypt(encrypt);
-                context.setAppversion(header.getVersion());
-                context.setImei(header.getImei());
-                context.setOs_type(header.getOs_type());
-                context.setChannel(header.getChannel());
-                context.setClientId(header.getClientId());
-
-                context.setUserid(header.getUserid());
-                context.setMobile(header.getMobile());
-                context.setCityid(header.getCityid());
-                context.setCityname(header.getCityname());
-            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();

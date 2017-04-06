@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.fun.likechat.persistence.po.Actor;
 import com.fun.likechat.persistence.po.Column;
@@ -20,6 +21,7 @@ import com.fun.likechat.vo.ActorVo;
 import com.fun.likechat.vo.BannerVo;
 import com.fun.likechat.vo.TagVo;
 
+@Service
 public class HomePageLogic {
 	private static final Logger logger = LogFactory.getInstance().getLogger();
 
