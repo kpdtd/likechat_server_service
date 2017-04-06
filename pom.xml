@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>war</packaging>
 	<name>likechat_server_service</name>
-	<groupId>com.tiger.flow</groupId>
+	<groupId>com.fun.likechat</groupId>
 	<artifactId>likechat_server_service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 

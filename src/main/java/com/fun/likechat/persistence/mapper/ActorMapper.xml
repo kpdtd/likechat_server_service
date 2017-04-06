@@ -38,7 +38,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,idcard,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
+		id,idcard,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,video_show,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
 	    ]]>
 	</sql>
 
@@ -55,6 +55,7 @@
         	icon,
         	signature,
         	introduction,
+        	video_show,
         	price,
         	show_time,
         	state,
@@ -83,6 +84,7 @@
         	#{icon},
         	#{signature},
         	#{introduction},
+        	#{videoShow},
         	#{price},
         	#{showTime},
         	#{state},
@@ -133,6 +135,9 @@
 	        </if>
 	        <if test="introduction != null">
 	        	introduction = #{introduction},
+	        </if>
+	        <if test="videoShow != null">
+	        	video_show = #{videoShow},
 	        </if>
 	        <if test="price != null">
 	        	price = #{price},

@@ -15,6 +15,7 @@ public class Actor {
 	private String introduction;//自我介绍
 	private Integer price;//资费价格（整数）
 	private String showTime;//播出时间，自己填入
+	private String videoShow;
 	private Integer state;//状态：1、账号生效   2、账号停用
 	private Integer sex;//1男2女
 	private java.util.Date birthday;//生日
@@ -219,6 +220,14 @@ public class Actor {
 	
 	public java.util.Date getUpdateTime() {
 		return this.updateTime;
+	}
+
+	public String getVideoShow() {
+		return videoShow;
+	}
+
+	public void setVideoShow(String videoShow) {
+		this.videoShow = videoShow;
 	}
 }
 
