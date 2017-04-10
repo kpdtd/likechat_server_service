@@ -1,52 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd">
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context.xsd 
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 	<!-- 自动扫描controller包下的所有类，使其认为spring mvc的控制器 -->
-	<context:component-scan base-package="com.fun.likechat" />
-	<mvc:resources mapping="/res/**" location="/res/" />
+	<context:component-scan base-package="com.fun.likechat.controller" />
+
+	<mvc:resources mapping="/media/**" location="/media/" />
 	<mvc:resources mapping="/*.jsp" location="/" />
-	<mvc:resources mapping="/pic/**" location="/" />
-	<mvc:resources mapping="/v/**" location="/" />
-	<bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<bean class="com.fun.likechat.interceptor.AESJackson2HttpMessageConverter">
-					<property name="objectMapper">
-						<bean class="com.fun.likechat.interceptor.TastingObjectMapper" />
-					</property>
-				</bean>
-			</list>
-		</property>
-	</bean>
-	<bean id="internalResourceViewResolver"
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<!-- 前缀 -->
-		<property name="prefix" value="/WEB-INF/" />
-		<!-- 后缀 -->
-		<property name="suffix" value=".jsp" />
-		<property name="contentType" value="text/html;charset=UTF-8" />
-	</bean>
-	<!-- 拦截器 -->
-	<bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
-		<property name="interceptors">
-		<!-- 多个拦截器,顺序执行 -->
-		<list>
-			<ref bean="webInterceptor" />
-		</list>
-		</property>
-	</bean>
-	<bean id="webInterceptor" class="com.fun.likechat.interceptor.WebControllerInterceptor"></bean>
+	<!-- don't handle the static resource -->
+    <mvc:default-servlet-handler />
+ 
+    <!-- if you use annotation you must configure following setting -->
+    <mvc:annotation-driven />
+     
+    <!-- configure the InternalResourceViewResolver -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+            id="internalResourceViewResolver">
+        <!-- 前缀 -->
+        <property name="prefix" value="/WEB-INF/" />
+        <!-- 后缀 -->
+        <property name="suffix" value=".jsp" />
+        <property name="contentType" value="text/html;charset=UTF-8" />
+    </bean>
+
 </beans>
