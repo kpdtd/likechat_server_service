@@ -23,13 +23,11 @@ public class ActorPageVo {
 	private String introduction;//自我介绍
 	
 	private String price;//资费价格（整数）转成 --》 1.5币/分
-//	private String callTime;//通话时长 --android自己获取
+	private String callTime;//通话时长
 	
 	
 	
 	private String videoUrl;//音频地址
-	private String videoTime;//音频时长
-	
 	private List<String> picList;//主播相册地址列表
 
 	public Integer getId() {
@@ -144,20 +142,20 @@ public class ActorPageVo {
 		this.videoUrl = videoUrl;
 	}
 
-	public String getVideoTime() {
-		return videoTime;
-	}
-
-	public void setVideoTime(String videoTime) {
-		this.videoTime = videoTime;
-	}
-
 	public List<String> getPicList() {
 		return picList;
 	}
 
 	public void setPicList(List<String> picList) {
 		this.picList = picList;
+	}
+
+	public String getCallTime() {
+		return callTime;
+	}
+
+	public void setCallTime(String callTime) {
+		this.callTime = callTime;
 	}
 	
 }

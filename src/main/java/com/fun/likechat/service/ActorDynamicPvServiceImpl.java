@@ -53,5 +53,10 @@ public class ActorDynamicPvServiceImpl implements ActorDynamicPvService {
 		return actorDynamicPvMapper.count(condition);
 	}
 	
+	@Override
+	public List<ActorDynamicPv> getLimitListByMap(Map<String, Object> condition) throws SQLException {
+		return actorDynamicPvMapper.getLimitListByMap(condition);
+	}
+	
 }
 

@@ -152,7 +152,6 @@
 		FROM
 			t_actor_dynamic_pv 
 	    <include refid="where" />
-	    ${limit}
 	</select>
 	
 	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.ActorDynamicPv" resultType="com.fun.likechat.persistence.po.ActorDynamicPv">
@@ -162,5 +161,14 @@
 			t_actor_dynamic_pv 
 	    <include refid="whereForPo" />
 	</select>
+	
+	<select id="getLimitListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.ActorDynamicPv">
+		SELECT 
+			*
+		FROM
+			t_actor_dynamic_pv 
+	    <include refid="where" />
+	    order by id desc limit ${limit}
+	</select>	
 </mapper>
 
