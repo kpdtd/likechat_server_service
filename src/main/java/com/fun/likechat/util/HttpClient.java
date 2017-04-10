@@ -103,8 +103,10 @@ public class HttpClient {
             }
             httpConn.setConnectTimeout(15000);
             httpConn.setRequestMethod("POST");
+//            httpConn.setRequestProperty("Content-type",
+//                    "application/x-www-form-urlencoded;text/xml;charset=UTF-8");
             httpConn.setRequestProperty("Content-type",
-                    "application/x-www-form-urlencoded;text/xml;charset=UTF-8");
+                    "multipart/form-data;charset=UTF-8");
             httpConn.setRequestProperty("Connection", "close");
             httpConn.setRequestProperty("Content-Length", length);
             httpConn.setDoInput(true);

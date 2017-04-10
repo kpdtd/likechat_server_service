@@ -147,7 +147,7 @@ public class AESJackson2HttpMessageConverter extends AbstractHttpMessageConverte
 			//str=URLDecoder.decode(str,charset.toString());
 			logger.info("获取数据解密前："+str);
 			try {
-				str = AESCrypto.decrypt(str);
+				//str = AESCrypto.decrypt(str);
 				logger.info("接收到 APPJSON串："+str);
 				str = Tools.cleanXSS(str);
 			} catch (Exception e) {
@@ -208,7 +208,7 @@ public class AESJackson2HttpMessageConverter extends AbstractHttpMessageConverte
 			
 			logger.info("返回数据加密前："+str);
 			try {
-				str = AESCrypto.encrypt(str);//加密后的字符串
+				//str = AESCrypto.encrypt(str);//加密后的字符串
 			} catch (Exception e) {
 				logger.info("返回数据加密的时候发生异常!!!");
 				

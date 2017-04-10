@@ -107,6 +107,9 @@ public class FindPageLogic {
 					return ActionResult.success(vo, startPage + Constant.PAGEZISE,
 							isNextPage(Constant.PAGEZISE, count, startPage));
 				}
+			}else {
+				logger.debug("没有动态数据");
+				return ActionResult.success();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
