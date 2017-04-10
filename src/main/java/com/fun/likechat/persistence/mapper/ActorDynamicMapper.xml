@@ -3,16 +3,11 @@
 
 
 <mapper namespace="com.fun.likechat.persistence.mapper.ActorDynamicMapper">
-	<!-- 根据情况定制属性列表
-	<resultMap id="RM.ActorDynamic" type="com.fun.likechat.po.ActorDynamic">
-		<result property="id" column="id"/>
-		<result property="actorId" column="actor_id"/>
-		<result property="content" column="content"/>
-		<result property="price" column="price"/>
-		<result property="createTime" column="create_time"/>
-		<result property="updateTime" column="update_time"/>
-	</resultMap>
-	-->
+	<!-- 根据情况定制属性列表 <resultMap id="RM.ActorDynamic" type="com.fun.likechat.po.ActorDynamic"> 
+		<result property="id" column="id"/> <result property="actorId" column="actor_id"/> 
+		<result property="content" column="content"/> <result property="price" column="price"/> 
+		<result property="createTime" column="create_time"/> <result property="updateTime" 
+		column="update_time"/> </resultMap> -->
 
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
@@ -42,40 +37,40 @@
 	</insert>
 
 	<update id="update" parameterType="com.fun.likechat.persistence.po.ActorDynamic">
-        UPDATE t_actor_dynamic 
+		UPDATE t_actor_dynamic
 		<set>
-	        <if test="actorId != null">
-	        	actor_id = #{actorId},
-	        </if>
-	        <if test="content != null">
-	        	content = #{content},
-	        </if>
-	        <if test="price != null">
-	        	price = #{price},
-	        </if>
-	        <if test="createTime != null">
-	        	create_time = #{createTime},
-	        </if>
-	        <if test="updateTime != null">
-	        	update_time = #{updateTime}
-	        </if>
-	    </set>
-        WHERE
-	        id = #{id}
+			<if test="actorId != null">
+				actor_id = #{actorId},
+			</if>
+			<if test="content != null">
+				content = #{content},
+			</if>
+			<if test="price != null">
+				price = #{price},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime}
+			</if>
+		</set>
+		WHERE
+		id = #{id}
 	</update>
 
 	<delete id="deleteById">
-        DELETE FROM t_actor_dynamic WHERE
-        id = #{id}
+		DELETE FROM t_actor_dynamic WHERE
+		id = #{id}
 	</delete>
 
 	<select id="getById" resultType="com.fun.likechat.persistence.po.ActorDynamic">
 		SELECT
-			*
+		*
 		FROM
-			t_actor_dynamic 
-	    WHERE
-	        id = #{id} 
+		t_actor_dynamic
+		WHERE
+		id = #{id}
 	</select>
 
 	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
@@ -108,7 +103,7 @@
 			</if>
 		</where>
 	</sql>
-	
+
 	<sql id="whereForPo">
 		<where>
 			<if test="id != null">
@@ -124,28 +119,84 @@
 				AND price = #{price}
 			</if>
 		</where>
-	</sql>	
+	</sql>
 
 	<select id="count" parameterType="java.util.Map" resultType="int">
 		SELECT count(*) FROM t_actor_dynamic
 		<include refid="where" />
 	</select>
 
-	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.ActorDynamic">
-		SELECT 
-			*
+	<select id="getListByMap" parameterType="java.util.Map"
+		resultType="com.fun.likechat.persistence.po.ActorDynamic">
+		SELECT
+		*
 		FROM
-			t_actor_dynamic 
-	    <include refid="where" />
-	    ${limit}
+		t_actor_dynamic
+		<include refid="where" />
+		${limit}
 	</select>
-	
-	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.ActorDynamic" resultType="com.fun.likechat.persistence.po.ActorDynamic">
-		SELECT 
-			*
-		FROM 
-			t_actor_dynamic
-	    <include refid="whereForPo" />
+
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.ActorDynamic"
+		resultType="com.fun.likechat.persistence.po.ActorDynamic">
+		SELECT
+		*
+		FROM
+		t_actor_dynamic
+		<include refid="whereForPo" />
+	</select>
+	<select id="getNewestDynamic" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		b.nickname,b.icon,b.signature,a.update_time,a.content,a.id 
+		FROM
+		t_actor_dynamic a, t_actor b
+		where a.actor_id=b.id order by a.update_time desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="newestDynamicCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id) 
+		FROM
+		t_actor_dynamic a, t_actor b
+		where a.actor_id=b.id 
+	</select>
+	<select id="getHotDynamic" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		b.nickname,b.icon,b.signature,a.update_time,a.content
+		FROM
+		t_actor_dynamic a, t_actor b
+		where a.actor_id=b.id order by a.update_time desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="hotDynamicCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id) 
+		FROM
+		t_actor_dynamic a, t_actor b
+		where a.actor_id=b.id   
+	</select>
+	<select id="getAttentionDynamic" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT c.nickname,c.icon,c.signature,a.update_time,a.content
+		FROM
+		t_actor_dynamic a,t_user_attention b,t_actor c where a.actor_id=b.actor_id 
+		and a.actor_id=c.id and b.user_id=#{userId}
+		order by a.update_time desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="attentionDynamicCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id)
+		FROM
+		t_actor_dynamic a,t_user_attention b,t_actor c where a.actor_id=b.actor_id 
+		and a.actor_id=c.id 
 	</select>
 </mapper>
 
