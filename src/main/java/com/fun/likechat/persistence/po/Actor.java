@@ -137,11 +137,11 @@ public class Actor {
 	public java.util.Date getBirthday() {
 		return this.birthday;
 	}
-	public void setprovince(String value) {
+	public void setProvince(String value) {
 		this.province = value;
 	}
 	
-	public String getprovince() {
+	public String getProvince() {
 		return this.province;
 	}
 	public void setCity(String value) {

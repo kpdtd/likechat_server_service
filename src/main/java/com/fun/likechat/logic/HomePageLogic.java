@@ -188,7 +188,7 @@ public class HomePageLogic {
     	apvo.setSex(actor.getSex());
     	apvo.setAge(DateUtil.getPersonAgeByBirthDate(actor.getBirthday()));
     	apvo.setIdcard(String.valueOf(actor.getIdcard()));
-    	apvo.setProvince(actor.getprovince());
+    	apvo.setProvince(actor.getProvince());
     	apvo.setCity(actor.getCity());
     	apvo.setFans(actor.getFans() == null ? "0" : String.valueOf(actor.getFans()));
     	apvo.setAttention(actor.getAttention() == null ? "0" : String.valueOf(actor.getAttention()));
