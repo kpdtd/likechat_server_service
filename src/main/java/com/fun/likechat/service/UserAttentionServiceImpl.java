@@ -56,6 +56,26 @@ public class UserAttentionServiceImpl implements UserAttentionService {
     public void cancelAttention(int userId, int actorId) throws SQLException {
 		userAttentionMapper.cancelAttention(userId, actorId);	    
     }
+
+	@Override
+	public List<Map<String, Object>> getUserFriends(Map<String, Object> condition) throws SQLException {
+		return userAttentionMapper.getUserFriends(condition);
+	}
+
+	@Override
+	public List<Map<String, Object>> getMyFans(Map<String, Object> condition) throws SQLException {
+		return userAttentionMapper.getMyFans(condition);
+	}
+
+	@Override
+	public int userFriendsCount(Map<String, Object> dataMap) throws SQLException {
+		return userAttentionMapper.userFriendsCount(dataMap);
+	}
+
+	@Override
+	public int myFansCount(Map<String, Object> dataMap) throws SQLException {
+		return userAttentionMapper.myFansCount(dataMap);
+	}
 	
 }
 

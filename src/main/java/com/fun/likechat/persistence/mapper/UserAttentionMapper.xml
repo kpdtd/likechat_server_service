@@ -126,6 +126,42 @@
 	<delete id="cancelAttention">
         DELETE FROM t_user_attention WHERE
         user_id = #{userId} and actor_id = #{actorId}
-	</delete>	
+	</delete>
+	<select id="getUserFriends" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		b.* 
+		FROM
+		t_user_attention a, t_actor b
+		where a.user_id=#{userId} and a.actor_id=b.id order by a.update_time desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="userFriendsCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id) 
+		FROM
+		t_user_attention a, t_actor b
+		where a.user_id=#{userId} and a.actor_id=b.id 
+	</select>
+	<select id="getMyFans" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		b.* 
+		FROM
+		t_user_attention a, t_actor b
+		where a.actor_id=#{actorId} and a.user_id=b.id order by a.update_time desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="myFansCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id) 
+		FROM
+		t_user_attention a, t_actor b
+		where a.actor_id=#{actorId} and a.user_id=b.id 
+	</select>		
 </mapper>
 
