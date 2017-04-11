@@ -78,7 +78,7 @@ public class HomePageController extends BaseController {
 			}else {//别的，根据tag标签条件连表获取
 				Map<String, Object> condition = new HashMap<String, Object>();
 				condition.put("limit", limit);//
-				condition.put("identifying", identifying);
+				condition.put("tagIdentifying", identifying);
 				actorsVo = homePageLogic.getRandomActorsByCondition(condition);
 			}
 			return ActionResult.success(actorsVo);

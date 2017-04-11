@@ -9,11 +9,11 @@ import com.fun.likechat.persistence.po.UserAttention;
  * 功能描述: 
  */
 public interface UserAttentionMapper extends BaseMapper<UserAttention> {
-//	public void cancelAttention(@Param("userId") Integer userId, @Param("actorId") Integer actorId);
+	public void cancelAttention(@Param("userId") Integer userId, @Param("actorId") Integer actorId);
 	
 	/**
 	测试下是否可以删,为什么集成的接口就不用@Param
 	**/
-	public void cancelAttention(Integer userId, Integer actorId);
+//	public void cancelAttention(Integer userId, Integer actorId);//报错，需要加@param
 
 }

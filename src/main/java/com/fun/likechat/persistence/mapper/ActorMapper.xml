@@ -38,7 +38,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,idcard,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,video_show,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
+		id,idcard,identity,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,video_show,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
 	    ]]>
 	</sql>
 
@@ -47,6 +47,7 @@
         INSERT INTO t_actor (
         	id,
         	idcard,
+        	identity,
         	name,
         	nickname,
         	recommend,
@@ -76,6 +77,7 @@
         ) VALUES (
         	#{id},
         	#{idcard},
+        	#{identity},
         	#{name},
         	#{nickname},
         	#{recommend},
@@ -111,6 +113,9 @@
 		<set>
 	        <if test="idcard != null">
 	        	idcard = #{idcard},
+	        </if>
+	        <if test="identity != null">
+	        	identity = #{identity},
 	        </if>
 	        <if test="name != null">
 	        	name = #{name},
@@ -218,6 +223,9 @@
 			<if test="idcard != null">
 				AND idcard = #{idcard}
 			</if>
+			<if test="identity != null">
+	        	identity = #{identity},
+	        </if>
 			<if test="name != null">
 				AND name = #{name}
 			</if>
@@ -311,6 +319,9 @@
 			<if test="idcard != null">
 				AND idcard = #{idcard}
 			</if>
+			<if test="identity != null">
+	        	identity = #{identity},
+	        </if>
 			<if test="name != null">
 				AND name = #{name}
 			</if>
@@ -408,18 +419,20 @@
 			*
 		FROM
 			t_actor 
+		WHERE
+			identity = 1
 	    ORDER BY 
 	    	RAND()  LIMIT ${limit}
 	</select>
 	
 	<!-- 根据tag标签条件随机获取20条主播 -->
-	<select id="getRandomActorsByCondition" resultType="com.fun.likechat.persistence.po.Actor">
+	<select id="getRandomActorsByCondition" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.Actor">
 		SELECT
 			*
 		FROM
 			t_actor, t_r_actor_tag
 		WHERE
-			t_r_actor_tag.identifying = #{tag_identifying} and t_r_actor_tag.actor_id = t_actor.id
+			t_r_actor_tag.tag_identifying = #{tagIdentifying} and t_r_actor_tag.actor_id = t_actor.id and t_actor.identity = 1
 	    ORDER BY 
 	    	RAND()  LIMIT ${limit}
 	</select>	
