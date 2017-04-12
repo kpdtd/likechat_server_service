@@ -92,6 +92,7 @@ public class FindPageLogic {
 						vo.setSignature(actorDynamic.get("signature").toString());
 					}
 					vo.setUpdateTime(actorDynamic.get("update_time").toString());
+					vo.setId((Integer)actorDynamic.get("id"));
 					List<String> dynamicUrl = new ArrayList<String>();
 					// 获取到主播动态资源，如图片、语音、视频
 					ActorDynamicPv adpv = new ActorDynamicPv();

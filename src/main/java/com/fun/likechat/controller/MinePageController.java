@@ -66,4 +66,18 @@ public class MinePageController extends BaseController {
         }
         return ActionResult.fail();
     }
+    /*
+     * 我的动态
+     */
+    @RequestMapping(value = "getMyDynamics", method = RequestMethod.POST)
+    public @ResponseBody ActionResult getMyDynamics(@RequestBody String body) {
+        try {
+        	JSONObject json = JsonHelper.toJsonObject(body);
+            String stamp = json.getString("stamp");
+            return minePageLogic.getMyDynamic(stamp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ActionResult.fail();
+    }
 }

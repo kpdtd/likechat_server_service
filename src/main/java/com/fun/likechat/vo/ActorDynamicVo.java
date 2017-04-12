@@ -4,6 +4,7 @@ import java.util.List;
 
 public class ActorDynamicVo {
 
+	private Integer id;//动态ID
     private String nickname; // 主播昵称
     private String imgUrl;// 主播图片URL
     private String signature;// 主播个性签名
@@ -12,7 +13,14 @@ public class ActorDynamicVo {
     private int dynamicType; // 动态类型（1、视频2、照片3、语音）
     private List<String> dynamicUrl; // 动态URL，字符串的列表（视频、照片、语音的下载播放地址）
     private String watchingTotal; // 观看总人数
-    public String getNickname() {
+    
+    public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getNickname() {
         return nickname;
     }
     public void setNickname(String nickname) {

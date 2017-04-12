@@ -38,11 +38,9 @@ public class MinePageControllTest extends BaseTest {
 
 	@Test
 	public void testGetMineInfo() {
-		//拼装测试json
-		Map<String , Object> data=new HashMap<>();
-		data.put("stamp", "0");
+		
 		try {
-			String result=HttpClient.postRequest("http://127.0.0.1:8081/likechat_server_service/mine/getMineInfo", JsonHelper.toJson(data));
+			String result=HttpClient.postRequest("http://127.0.0.1:8081/likechat_server_service/mine/getMineInfo", "");
 			System.out.println("result:"+result);
 			Assert.assertNotNull(result);
 		} catch (IOException e) {

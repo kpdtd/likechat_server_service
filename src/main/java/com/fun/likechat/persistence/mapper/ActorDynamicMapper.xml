@@ -150,7 +150,11 @@
 		b.nickname,b.icon,b.signature,a.update_time,a.content,a.id 
 		FROM
 		t_actor_dynamic a, t_actor b
-		where a.actor_id=b.id order by a.update_time desc
+		where a.actor_id=b.id 
+		<if test="actorId > 0">
+			and a.actor_id=#{actorId} 
+		</if>
+		order by a.update_time desc 
 		<if test="pageSize > 0">
 			limit #{startPage}, #{pageSize}
 		</if>
@@ -161,11 +165,14 @@
 		FROM
 		t_actor_dynamic a, t_actor b
 		where a.actor_id=b.id 
+		<if test="actorId > 0">
+			and a.actor_id=#{actorId} 
+		</if>
 	</select>
 	<select id="getHotDynamic" parameterType="java.util.Map"
 		resultType="java.util.Map">
 		SELECT
-		b.nickname,b.icon,b.signature,a.update_time,a.content
+		b.nickname,b.icon,b.signature,a.update_time,a.content,a.id 
 		FROM
 		t_actor_dynamic a, t_actor b
 		where a.actor_id=b.id order by a.update_time desc
@@ -182,7 +189,7 @@
 	</select>
 	<select id="getAttentionDynamic" parameterType="java.util.Map"
 		resultType="java.util.Map">
-		SELECT c.nickname,c.icon,c.signature,a.update_time,a.content
+		SELECT c.nickname,c.icon,c.signature,a.update_time,a.content,a.id 
 		FROM
 		t_actor_dynamic a,t_user_attention b,t_actor c where a.actor_id=b.actor_id 
 		and a.actor_id=c.id and b.user_id=#{userId}
