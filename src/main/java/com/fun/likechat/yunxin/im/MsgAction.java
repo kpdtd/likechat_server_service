@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.stereotype.Service;
 
 import com.fun.likechat.util.JsonHelper;
 import com.fun.likechat.util.LogFactory;
@@ -19,6 +20,7 @@ import com.fun.likechat.yunxin.data.SendMsgReqData;
  * @author yangyiqiang
  *
  */
+@Service
 public class MsgAction {
 
 	/**
