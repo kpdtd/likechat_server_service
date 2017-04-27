@@ -4,7 +4,10 @@ import java.util.*;
 
 public class Actor {
 	private Integer id;
-	private Integer idcard;//'固定8位，不重复，无规则的数字。用于标识唯一用户（类似于房间号）',
+	private String idcard;//'固定8位，不重复，无规则的数字。用于标识唯一用户（类似于房间号）'
+	private Integer identity;
+	private String openId;
+	private String loginType;
 	private String name;//'主播名称',
 	private String nickname;// '昵称'
 	private Integer recommend;//'编辑推荐：  1是 0否（预留）'
@@ -39,11 +42,11 @@ public class Actor {
 	public Integer getId() {
 		return this.id;
 	}
-	public void setIdcard(Integer value) {
+	public void setIdcard(String value) {
 		this.idcard = value;
 	}
 	
-	public Integer getIdcard() {
+	public String getIdcard() {
 		return this.idcard;
 	}
 	public void setName(String value) {
@@ -228,6 +231,30 @@ public class Actor {
 
 	public void setVideoShow(String videoShow) {
 		this.videoShow = videoShow;
+	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	public String getLoginType() {
+		return loginType;
+	}
+
+	public void setLoginType(String loginType) {
+		this.loginType = loginType;
+	}
+
+	public Integer getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(Integer identity) {
+		this.identity = identity;
 	}
 }
 

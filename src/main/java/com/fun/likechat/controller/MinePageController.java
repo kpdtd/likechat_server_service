@@ -80,4 +80,23 @@ public class MinePageController extends BaseController {
         }
         return ActionResult.fail();
     }
+    
+    /*
+     * qq 微信 登录
+     * 参数：
+     * 	openId：唯一标识
+     * 	type：qq 微信
+     */
+    @RequestMapping(value = "login", method = RequestMethod.POST)
+    public @ResponseBody ActionResult login(@RequestBody String body) {
+        try {
+        	JSONObject json = JsonHelper.toJsonObject(body);
+            String openId = json.getString("openId");
+            String type = json.getString("type");
+            return minePageLogic.login(openId, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ActionResult.fail();
+    }
 }

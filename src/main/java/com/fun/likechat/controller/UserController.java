@@ -11,6 +11,7 @@ import com.fun.likechat.interceptor.ActionResult;
 import com.fun.likechat.util.JsonHelper;
 
 /**
+ * 从别处拷贝过来，并没有用到这个controller
  */
 @Controller
 @RequestMapping(value = "/user")

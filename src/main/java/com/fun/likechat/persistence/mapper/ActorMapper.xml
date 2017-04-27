@@ -38,7 +38,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,idcard,identity,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,video_show,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
+		id,idcard,identity,open_id,login_type,name,nickname,recommend,fans,attention,icon,signature,introduction,price,show_time,video_show,state,sex,birthday,province,city,profession,hight,weight,blogurl,phone,qq,wechat,creator,create_time,update_time
 	    ]]>
 	</sql>
 
@@ -48,6 +48,8 @@
         	id,
         	idcard,
         	identity,
+        	open_id,
+        	login_type,
         	name,
         	nickname,
         	recommend,
@@ -78,6 +80,8 @@
         	#{id},
         	#{idcard},
         	#{identity},
+        	#{openId},
+        	#{loginType},
         	#{name},
         	#{nickname},
         	#{recommend},
@@ -223,7 +227,10 @@
 			<if test="idcard != null">
 				AND idcard = #{idcard}
 			</if>
-			<if test="identity != null">
+			<if test="openId != null">
+	        	open_id = #{openId},
+	        </if>
+	        <if test="identity != null">
 	        	identity = #{identity},
 	        </if>
 			<if test="name != null">
@@ -321,6 +328,9 @@
 			</if>
 			<if test="identity != null">
 	        	identity = #{identity},
+	        </if>
+	        <if test="openId != null">
+	        	open_id = #{openId},
 	        </if>
 			<if test="name != null">
 				AND name = #{name}

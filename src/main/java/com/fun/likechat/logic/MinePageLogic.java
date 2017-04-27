@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -45,9 +46,9 @@ public class MinePageLogic {
 	public ActionResult getMineInfo() throws Exception {
 		// 获取用户信息
 		BeatContext beatContext = RequestUtils.getCurrent();
-		if (beatContext != null && beatContext.getUserid() > 0) {
+		if(beatContext != null && beatContext.getUserid() > 0) {
 			Actor actor = actorService.getById(beatContext.getUserid());
-			if (actor != null) {
+			if(actor != null) {
 				// 转换成vo返回
 				ActorVo vo = new ActorVo();
 				vo.setAge(DateUtil.getPersonAgeByBirthDate(actor.getBirthday()));
@@ -58,16 +59,49 @@ public class MinePageLogic {
 				vo.setSex(actor.getSex());
 				vo.setSignature(actor.getSignature());
 				return ActionResult.success(vo);
-			} else {
+			}
+			else {
 				logger.debug("无法根据用户ID获取到用户信息");
 			}
-		} else {
+		}
+		else {
 			logger.debug("没有用户信息");
 		}
 
 		return ActionResult.fail();
 	}
 
+	/*
+	 * 获取我的信息
+	 */
+	public ActionResult login(String openId, String type) throws Exception {
+		Actor po = new Actor();
+		po.setOpenId(openId);
+		List<Actor> actors = actorService.getListByPo(po);
+		//如果不存在，则插入记录
+		if(actors == null || actors.isEmpty()) {
+			String idcard = generateIdcard(8);
+			po.setIdcard(idcard);
+			po.setIdentity(2);//主播都是运营人员添加的；
+			po.setNickname(idcard);//第一次昵称用身份标识代替
+			po.setOpenId(openId);
+			po.setLoginType(type);
+			actorService.insert(po);
+		}
+		else{//存在，则返回用户信息；
+			po = actors.get(0);
+		}
+		
+		ActorVo vo = new ActorVo();
+		vo.setAge(DateUtil.getPersonAgeByBirthDate(po.getBirthday()));
+		vo.setIcon(po.getIcon());
+		vo.setId(po.getId());
+		vo.setIdcard(po.getIdcard());
+		vo.setNickname(po.getNickname());
+		vo.setSex(po.getSex());
+		vo.setSignature(po.getSignature());
+		return ActionResult.success(vo);
+	}
 	/*
 	 * 账户余额
 	 */
@@ -81,11 +115,11 @@ public class MinePageLogic {
 	public ActionResult getUserFriends(String stamp) throws Exception {
 		// 获取用户信息
 		BeatContext beatContext = RequestUtils.getCurrent();
-		if (beatContext != null && beatContext.getUserid() > 0) {
+		if(beatContext != null && beatContext.getUserid() > 0) {
 			Map<String, Object> dataMap = new HashMap<String, Object>();
 			int startPage = 0;
 			int count = 0;
-			if (StringUtils.isNotBlank(stamp)) {
+			if(StringUtils.isNotBlank(stamp)) {
 				startPage = Integer.parseInt(stamp);
 			}
 			dataMap.put("startPage", startPage);
@@ -101,9 +135,9 @@ public class MinePageLogic {
 			returnMap.put("fansCount", fansCount);
 			returnMap.put("dataList", toActorVo(actors));
 			// 返回
-			ActionResult.success(returnMap, startPage + Constant.PAGEZISE,
-					isNextPage(Constant.PAGEZISE, count, startPage));
-		} else {
+			ActionResult.success(returnMap, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
+		}
+		else {
 			logger.debug("没有用户信息");
 		}
 
@@ -116,11 +150,11 @@ public class MinePageLogic {
 	public ActionResult getFans(String stamp) throws Exception {
 		// 获取用户信息
 		BeatContext beatContext = RequestUtils.getCurrent();
-		if (beatContext != null && beatContext.getUserid() > 0) {
+		if(beatContext != null && beatContext.getUserid() > 0) {
 			Map<String, Object> dataMap = new HashMap<String, Object>();
 			int startPage = 0;
 			int count = 0;
-			if (StringUtils.isNotBlank(stamp)) {
+			if(StringUtils.isNotBlank(stamp)) {
 				startPage = Integer.parseInt(stamp);
 			}
 			dataMap.put("startPage", startPage);
@@ -136,9 +170,9 @@ public class MinePageLogic {
 			returnMap.put("fansCount", count);
 			returnMap.put("dataList", toActorVo(actors));
 			// 返回
-			ActionResult.success(returnMap, startPage + Constant.PAGEZISE,
-					isNextPage(Constant.PAGEZISE, count, startPage));
-		} else {
+			ActionResult.success(returnMap, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
+		}
+		else {
 			logger.debug("没有用户信息");
 		}
 		return ActionResult.fail();
@@ -150,11 +184,11 @@ public class MinePageLogic {
 	public ActionResult getMyDynamic(String stamp) throws Exception {
 		// 获取用户信息
 		BeatContext beatContext = RequestUtils.getCurrent();
-		if (beatContext != null && beatContext.getUserid() > 0) {
+		if(beatContext != null && beatContext.getUserid() > 0) {
 			Map<String, Object> dataMap = new HashMap<String, Object>();
 			int startPage = 0;
 			int count = 0;
-			if (StringUtils.isNotBlank(stamp)) {
+			if(StringUtils.isNotBlank(stamp)) {
 				startPage = Integer.parseInt(stamp);
 			}
 			dataMap.put("startPage", startPage);
@@ -164,7 +198,8 @@ public class MinePageLogic {
 			count = actorDynamicService.newestDynamicCount(dataMap);
 			// 封装返回的对象
 			return toActorDynamicVo(actorDynamics, count, startPage);
-		} else {
+		}
+		else {
 			logger.debug("没有用户信息");
 		}
 		return ActionResult.fail();
@@ -173,84 +208,99 @@ public class MinePageLogic {
 	private List<ActorVo> toActorVo(List<Map<String, Object>> actors) {
 		List<ActorVo> list = new ArrayList<>();
 		try {
-			if (actors != null && actors.size() > 0) {
-				for (Map<String, Object> actor : actors) {
+			if(actors != null && actors.size() > 0) {
+				for(Map<String, Object> actor : actors) {
 					// 封装返回的vo
 					ActorVo vo = new ActorVo();
-					if (actor.get("birthday") != null) {
+					if(actor.get("birthday") != null) {
 						vo.setAge(DateUtil.getPersonAgeByBirthDate((Date) actor.get("birthday")));
 					}
-					if (actor.get("icon") != null) {
+					if(actor.get("icon") != null) {
 						vo.setIcon(actor.get("icon").toString());
 					}
-					if (actor.get("nickname") != null) {
+					if(actor.get("nickname") != null) {
 						vo.setNickname(actor.get("nickname").toString());
 					}
-					if (actor.get("signature") != null) {
+					if(actor.get("signature") != null) {
 						vo.setSignature(actor.get("signature").toString());
 					}
 					vo.setId((Integer) actor.get("id"));
-					vo.setIdcard((Integer) actor.get("idcard"));
+					vo.setIdcard((String)actor.get("idcard"));
 					vo.setSex((Integer) actor.get("sex"));
 					list.add(vo);
 				}
-			} else {
+			}
+			else {
 				logger.debug("没有数据");
 			}
-		} catch (Exception e) {
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 		return list;
 	}
+
 	private ActionResult toActorDynamicVo(List<Map<String, Object>> actorDynamics, int count, int startPage) {
 		try {
-			if (actorDynamics != null && actorDynamics.size() > 0) {
-				for (Map<String, Object> actorDynamic : actorDynamics) {
+			if(actorDynamics != null && actorDynamics.size() > 0) {
+				for(Map<String, Object> actorDynamic : actorDynamics) {
 					// 封装返回的vo
 					ActorDynamicVo vo = new ActorDynamicVo();
-					if (actorDynamic.get("content") != null) {
+					if(actorDynamic.get("content") != null) {
 						vo.setContent(actorDynamic.get("content").toString());
 					}
-					if (actorDynamic.get("icon") != null) {
+					if(actorDynamic.get("icon") != null) {
 						vo.setImgUrl(actorDynamic.get("icon").toString());
 					}
-					if (actorDynamic.get("nickname") != null) {
+					if(actorDynamic.get("nickname") != null) {
 						vo.setNickname(actorDynamic.get("nickname").toString());
 					}
-					if (actorDynamic.get("signature") != null) {
+					if(actorDynamic.get("signature") != null) {
 						vo.setSignature(actorDynamic.get("signature").toString());
 					}
 					vo.setUpdateTime(actorDynamic.get("update_time").toString());
-					vo.setId((Integer)actorDynamic.get("id"));
+					vo.setId((Integer) actorDynamic.get("id"));
 					List<String> dynamicUrl = new ArrayList<String>();
 					// 获取到主播动态资源，如图片、语音、视频
 					ActorDynamicPv adpv = new ActorDynamicPv();
 					adpv.setDynamicId(Integer.parseInt(actorDynamic.get("id").toString()));
 					List<ActorDynamicPv> actorDynamicPvs = actorDynamicPvService.getListByPo(adpv);
-					if (actorDynamicPvs != null && actorDynamicPvs.size() > 0) {
-						for (ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
+					if(actorDynamicPvs != null && actorDynamicPvs.size() > 0) {
+						for(ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
 							dynamicUrl.add(actorDynamicPv.getSavePath());
 							vo.setDynamicType(actorDynamicPv.getType());
 						}
 					}
 					vo.setDynamicUrl(dynamicUrl);
-					return ActionResult.success(vo, startPage + Constant.PAGEZISE,
-							isNextPage(Constant.PAGEZISE, count, startPage));
+					return ActionResult.success(vo, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
 				}
-			}else {
+			}
+			else {
 				logger.debug("没有动态数据");
 				return ActionResult.success();
 			}
-		} catch (Exception e) {
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 		return ActionResult.fail();
 	}
+
 	public boolean isNextPage(int pageSize, int count, int start) throws Exception {
 		// start,当前页的起始位
-		if ((pageSize + start) < count) {
+		if((pageSize + start) < count) {
 			return true;
 		}
 		return false;
+	}
+
+	private String generateIdcard(int strLength) {
+		Random rm = new Random();
+		// 获得随机数
+		double pross = (1 + rm.nextDouble()) * Math.pow(10, strLength);
+		// 将获得的获得随机数转化为字符串
+		String fixLenthString = String.valueOf(pross);
+		// 返回固定的长度的随机数
+		return fixLenthString.substring(1, strLength + 1);
 	}
 }

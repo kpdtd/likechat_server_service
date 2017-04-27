@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class ActorVo {
 	private Integer id;
-	private Integer idcard;//'固定8位，不重复，无规则的数字。用于标识唯一用户（类似于房间号）'
+	private String idcard;//'固定8位，不重复，无规则的数字。用于标识唯一用户（类似于房间号）'
 	private String nickname;// '昵称'
 	private String icon;//'头像存放相对地址'
 	private String signature;//个性签名
@@ -23,10 +23,10 @@ public class ActorVo {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getIdcard() {
+	public String getIdcard() {
 		return idcard;
 	}
-	public void setIdcard(Integer idcard) {
+	public void setIdcard(String idcard) {
 		this.idcard = idcard;
 	}
 	public String getNickname() {
