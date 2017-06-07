@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.fun.likechat.constant.Constant;
+import com.fun.likechat.constant.ErrCodeEnum;
 import com.fun.likechat.interceptor.ActionResult;
 import com.fun.likechat.logic.HomePageLogic;
 import com.fun.likechat.persistence.po.UserAttention;
@@ -42,7 +43,7 @@ public class HomePageController extends BaseController {
 		try {
 			// 1、获取tag列表
 			List<TagVo> tagsVo = homePageLogic.getAllSystemTagVo();
-			// 2、获取banner,banner是用频道来描述的；
+			// 2、获取banner,banner是用频道来描述的
 			List<BannerVo> bannerVo = homePageLogic.getBannerListVo("banner");
 			// 3、获取随机（20个）主播列表，每次刷新都是随机20个
 			List<ActorVo> actorsVo = homePageLogic.getRandomActorsVo(Constant.ACTOR_RANDOM_LIMIT);
@@ -73,7 +74,7 @@ public class HomePageController extends BaseController {
 			int limit = Constant.ACTOR_RANDOM_LIMIT;
 			List<ActorVo> actorsVo = null;
 			
-			if(StringUtils.isEmpty(identifying) || "ALL".equals(identifying)) {//如果是"全部"(tag的identifying不填写或写成固定ALL)直接随机20条数据
+			if(StringUtils.isEmpty(identifying) || "QUANBU".equals(identifying)) {//如果是"全部"(tag的identifying不填写或写成固定ALL)直接随机20条数据
 				actorsVo = homePageLogic.getRandomActorsVo(limit);
 			}else {//别的，根据tag标签条件连表获取
 				Map<String, Object> condition = new HashMap<String, Object>();
@@ -132,11 +133,15 @@ public class HomePageController extends BaseController {
 	public @ResponseBody ActionResult addAttention(@RequestBody String body) {
 		try {
 			JSONObject json = JsonHelper.toJsonObject(body);
-			int userId = json.getIntValue("userId");
-			int actorId = json.getIntValue("actorId");
+			Integer userId = json.getIntValue("userId");
+			Integer actorId = json.getIntValue("actorId");
+			if(userId == null || actorId == null || userId<1 || actorId<1) {
+				int code = ErrCodeEnum.addAttentionActor_error.getCode();
+				return ActionResult.fail(code, ErrCodeEnum.getDescByCode(code));
+			}
 			UserAttention ua =  new UserAttention();
 			ua.setUserId(userId);
-			ua.setActorId(userId);
+			ua.setActorId(actorId);
 			homePageLogic.addAttention(ua);
 			return ActionResult.success();
 		}

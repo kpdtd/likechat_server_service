@@ -2,7 +2,13 @@ package com.fun.likechat.constant;
 
 public interface Constant {
 
+	public static final String D_IMG_SAVE_PATH = "D_IMG_SAVE_PATH";// st-图片存储位置
+	public static final String D_IMG_SAVE_PATH_HTTP = "D_IMG_SAVE_PATH_HTTP";// st-图片http可以访问的地址（不含图片名和子文件夹）
+//	public static final String D_IMG_SAVE_PATH_HTTP_CONSTANT = "D_IMG_SAVE_PATH_HTTP";// st-图片http可以访问的地址（不含图片名和子文件夹）
+
+	
     public static final int PAGEZISE = 20;// 分页常量
+    public static final int FIND_PAGEZISE = 10;// 发现动态页分页常量
 
     // ******************************************
     public static final int TYPE_ACTOR = 1;// 主播

@@ -5,8 +5,10 @@ import java.util.*;
 public class ActorDynamic {
 	private Integer id;
 	private Integer actorId;
+	private Integer type;
 	private String content;
 	private Integer price;
+	private Integer pageView;
 	private java.util.Date createTime;
 	private java.util.Date updateTime;
 	
@@ -51,6 +53,22 @@ public class ActorDynamic {
 	
 	public java.util.Date getUpdateTime() {
 		return this.updateTime;
+	}
+
+	public Integer getPageView() {
+		return pageView;
+	}
+
+	public void setPageView(Integer pageView) {
+		this.pageView = pageView;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 }
 

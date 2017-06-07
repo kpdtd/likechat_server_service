@@ -1,6 +1,7 @@
 package com.fun.likechat.logic;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fun.likechat.constant.Constant;
+import com.fun.likechat.constant.ErrCodeEnum;
 import com.fun.likechat.interceptor.ActionResult;
 import com.fun.likechat.interceptor.BeatContext;
 import com.fun.likechat.interceptor.RequestUtils;
+import com.fun.likechat.persistence.po.ActorDynamic;
 import com.fun.likechat.persistence.po.ActorDynamicPv;
+import com.fun.likechat.persistence.po.DataDictionary;
 import com.fun.likechat.service.ActorDynamicPvService;
 import com.fun.likechat.service.ActorDynamicService;
+import com.fun.likechat.service.DictionaryService;
+import com.fun.likechat.service.UserAttentionService;
+import com.fun.likechat.util.DateUtil;
 import com.fun.likechat.util.LogFactory;
 import com.fun.likechat.vo.ActorDynamicVo;
 
@@ -25,7 +32,13 @@ public class FindPageLogic {
 
 	@Autowired
 	ActorDynamicService actorDynamicService;
+	@Autowired
 	ActorDynamicPvService actorDynamicPvService;
+	@Autowired
+	DictionaryService dictionaryService;
+	@Autowired
+	UserAttentionService userAttentionService;
+	
 	private static final Logger logger = LogFactory.getInstance().getLogger();
 
 	public ActionResult getFindList(int tag, String stamp) throws Exception {
@@ -36,7 +49,7 @@ public class FindPageLogic {
 			startPage = Integer.parseInt(stamp);
 		}
 		dataMap.put("startPage", startPage);
-		dataMap.put("pageSize", Constant.PAGEZISE);
+		dataMap.put("pageSize", Constant.FIND_PAGEZISE);
 		List<Map<String, Object>> actorDynamics = null;
 		switch (tag) {
 		/*
@@ -56,23 +69,35 @@ public class FindPageLogic {
 			return toVo(actorDynamics, count, startPage);
 			
 			/*
-			 * 关注
+			 * 关注:按照用户关注的主播发的动态最新的放在最上面
 			 */
-			
 		case 3:
 			// 获取用户信息
 			BeatContext beatContext = RequestUtils.getCurrent();
 			if (beatContext != null && beatContext.getUserid() > 0) {
-				dataMap.put("userId", beatContext.getUserid());
+				dataMap.put("userId", beatContext.getUserid());//
+				//我的实现：
+				//1：获取关注的主播列表
+				List<Map<String, Object>> actorList = userAttentionService.getUserFriends(dataMap);
+				count  = userAttentionService.userFriendsCount(dataMap);
+				//2：循环获取主播的最新关注数据-- order by id desc limit 1
+				for(Map<String, Object> mapPo : actorList) {
+					ActorDynamic ad = actorDynamicService.getNewestOneDynamic((Integer)mapPo.get("id"));
+					mapPo.put("type", ad.getType());
+					mapPo.put("page_view", ad.getPageView());
+					mapPo.put("create_time", ad.getCreateTime());
+					mapPo.put("content", ad.getContent());
+					mapPo.put("id", ad.getId());
+				}
+				return toVo(actorList, count, startPage);
 			} else {
 				logger.debug("没有用户信息");
+				return ActionResult.fail(ErrCodeEnum.getMyPageData_error.getCode(), ErrCodeEnum.getMyPageData_error.getDesc());
 			}
-			actorDynamics = actorDynamicService.getAttentionDynamic(dataMap);
-			count = actorDynamicService.attentionDynamicCount(dataMap);
-			return toVo(actorDynamics, count, startPage);
 		}
 		return ActionResult.fail();
 	}
+	
 	private ActionResult toVo(List<Map<String, Object>> actorDynamics, int count, int startPage) {
 		try {
 			if (actorDynamics != null && actorDynamics.size() > 0) {
@@ -91,22 +116,40 @@ public class FindPageLogic {
 					if (actorDynamic.get("signature") != null) {
 						vo.setSignature(actorDynamic.get("signature").toString());
 					}
-					vo.setUpdateTime(actorDynamic.get("update_time").toString());
-					vo.setId((Integer)actorDynamic.get("id"));
-					List<String> dynamicUrl = new ArrayList<String>();
+					if (actorDynamic.get("price") != null) {//
+						vo.setPrice((Integer)actorDynamic.get("price"));//
+					}
+					if (actorDynamic.get("page_view") != null) {//
+						vo.setPageView((Integer)actorDynamic.get("page_view"));//
+					}
+					if (actorDynamic.get("type") != null) {//如果报错，采用这种方式：Integer.parseInt(actorDynamic.get("id").toString())
+						vo.setDynamicType((Integer)actorDynamic.get("type"));//1、视频     2、照片  3、语音'
+					}
+					//做日期格式转换
+					if(actorDynamic.get("create_time") !=null && actorDynamic.get("create_time") instanceof Date) {
+						Date d = (Date)actorDynamic.get("create_time");
+						String sd = DateUtil.parseDateToString(d, DateUtil.DATE_FORMAT_MONTH_DAY_HOUR);
+						if(DateUtil.isNow(d) && sd.length() > 5) {
+							sd = "今天" + sd.substring(5);
+						}
+						vo.setCreateTime(sd);
+					}
+					
+					vo.setId(Integer.parseInt(actorDynamic.get("id").toString()));
+					List<String> dynamicUrlList = new ArrayList<String>();
 					// 获取到主播动态资源，如图片、语音、视频
 					ActorDynamicPv adpv = new ActorDynamicPv();
 					adpv.setDynamicId(Integer.parseInt(actorDynamic.get("id").toString()));
 					List<ActorDynamicPv> actorDynamicPvs = actorDynamicPvService.getListByPo(adpv);
 					if (actorDynamicPvs != null && actorDynamicPvs.size() > 0) {
+						DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
+						String httpPath = dictionary.getValue();
 						for (ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
-							dynamicUrl.add(actorDynamicPv.getSavePath());
-							vo.setDynamicType(actorDynamicPv.getType());
+							dynamicUrlList.add(httpPath + actorDynamicPv.getSavePath());
 						}
 					}
-					vo.setDynamicUrl(dynamicUrl);
-					return ActionResult.success(vo, startPage + Constant.PAGEZISE,
-							isNextPage(Constant.PAGEZISE, count, startPage));
+					vo.setDynamicUrl(dynamicUrlList);
+					return ActionResult.success(vo, startPage + Constant.FIND_PAGEZISE, isNextPage(Constant.FIND_PAGEZISE, count, startPage));
 				}
 			}else {
 				logger.debug("没有动态数据");
@@ -124,5 +167,10 @@ public class FindPageLogic {
 			return true;
 		}
 		return false;
+	}
+	
+	public ActionResult addDynamicPageView(int id) throws Exception {
+		actorDynamicService.addDynamicPageView(id);
+		return ActionResult.success();
 	}
 }

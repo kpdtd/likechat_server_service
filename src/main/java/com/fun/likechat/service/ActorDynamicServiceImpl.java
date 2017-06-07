@@ -81,6 +81,15 @@ public class ActorDynamicServiceImpl implements ActorDynamicService {
 	public int newestDynamicCount(Map<String, Object> dataMap) throws SQLException {
 		return actorDynamicMapper.newestDynamicCount(dataMap);
 	}
-	
+
+	@Override
+    public ActorDynamic getNewestOneDynamic(int actorId) throws SQLException {
+		return actorDynamicMapper.newestOneDynamic(actorId);
+    }
+
+	@Override
+    public void addDynamicPageView(int id) throws SQLException {
+		actorDynamicMapper.addDynamicPageView(id);
+    }
 }
 

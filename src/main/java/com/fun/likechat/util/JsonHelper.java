@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,6 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fun.likechat.vo.UserRegisterVo;
 
 public class JsonHelper {
 	
@@ -122,4 +126,28 @@ public class JsonHelper {
 		return JSONObject.parseArray(json);
 	}
 	
+	/**
+	 * st--实体对象转map
+	 * @param object
+	 * @return
+	 */
+	private Map<String, Object> object2Map(Object object){
+        JSONObject jsonObject = (JSONObject) JSON.toJSON(object);
+        Set<Entry<String,Object>> entrySet = jsonObject.entrySet();
+        Map<String, Object> map=new HashMap<String,Object>();
+        for (Entry<String, Object> entry : entrySet) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+        return map;
+    }
+	
+	public static void main(String[] args) {
+		UserRegisterVo vo = new UserRegisterVo();
+		vo.setOpenId("1");
+		vo.setNickname("name");
+		String json =  JsonHelper.toJson(vo);
+		System.out.println(json);
+		UserRegisterVo s = JsonHelper.toObject(json, UserRegisterVo.class);
+		System.out.println(s);
+    }
 }

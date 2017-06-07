@@ -23,8 +23,10 @@ public class FindPageController extends BaseController {
     FindPageLogic FindPageLogic;
 
     /**
-     * 获取动态列表： 最新：按照时间排序，最新的放在最上面； 热门：按照观看的人数排序，最多的放在最上面； 关注：按照用户关注的主播发的动态最新的放在最上面；
-     * 图片可以一次上传多张，视频一次只能上传一个，声音现录制
+     * 获取动态列表： 
+     * 最新：按照时间排序，最新的放在最上面； 
+     * 热门：按照观看的人数排序，最多的放在最上面； 
+     * 关注：按照用户关注的主播发的动态最新的放在最上面；
      * 
      * @param
      * @return
@@ -57,6 +59,23 @@ public class FindPageController extends BaseController {
             // 根据条件获取动态列表
 
             return new ActionResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ActionResult.fail();
+    }
+    
+    /**
+     * 增加动态的浏览量
+     * @param:动态id
+     * @return
+     */
+    @RequestMapping(value = "addDynamicPageView", method = RequestMethod.POST)
+    public @ResponseBody ActionResult addDynamicPageView(@RequestBody String body) {
+        try {
+            JSONObject json = JsonHelper.toJsonObject(body);
+            int id = json.getIntValue("id");
+            return FindPageLogic.addDynamicPageView(id);
         } catch (Exception e) {
             e.printStackTrace();
         }

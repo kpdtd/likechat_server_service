@@ -3,6 +3,7 @@ package com.fun.likechat.persistence.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 import com.fun.likechat.persistence.po.ActorDynamic;
@@ -19,5 +20,8 @@ public interface ActorDynamicMapper extends BaseMapper<ActorDynamic> {
 	int hotDynamicCount(Map<String, Object> dataMap) throws PersistenceException;
 	int attentionDynamicCount(Map<String, Object> dataMap) throws PersistenceException;
 	int newestDynamicCount(Map<String, Object> dataMap) throws PersistenceException;
+	
+	ActorDynamic newestOneDynamic(@Param("actorId") int actorId) throws PersistenceException;
+	void addDynamicPageView(@Param("id") int id) throws PersistenceException;
 
 }

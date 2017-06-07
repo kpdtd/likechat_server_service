@@ -1,9 +1,8 @@
 package com.fun.likechat.vo;
 
-import java.util.*;
 /**
  * <p>
- * antor的主页vo
+ * 我的信息vo ：相当于用户vo（UserVo，名字不改了）
  * </p>
  * 修改记录:
  * 		(从这里添加，没有则删除此项)
@@ -16,6 +15,7 @@ public class ActorVo {
 	private String signature;//个性签名
 	private String age;//年龄，直接填数  db is int（birthday）
 	private Integer sex;//1男2女
+	
 	
 	public Integer getId() {
 		return id;
@@ -59,9 +59,5 @@ public class ActorVo {
 	public void setSex(Integer sex) {
 		this.sex = sex;
 	}
-	@Override
-    public String toString() {
-	    return "ActorVo [id=" + id + ", idcard=" + idcard + ", nickname=" + nickname + ", icon=" + icon + ", signature=" + signature + ", age=" + age + ", sex=" + sex + "]";
-    }
 }
 

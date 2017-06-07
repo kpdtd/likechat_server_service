@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.RactorTagMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.RactorTag" type="com.likechat.admin.po.RactorTag">
+		<result property="id" column="id"/>
+		<result property="actorId" column="actor_id"/>
+		<result property="tagId" column="tag_id"/>
+		<result property="tagIdentifying" column="tag_identifying"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,actor_id,tag_id,tag_identifying,create_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_r_actor_tag (
+        	id,
+        	actor_id,
+        	tag_id,
+        	tag_identifying,
+        	create_time
+        ) VALUES (
+        	#{id},
+        	#{actorId},
+        	#{tagId},
+        	#{tagIdentifying},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.RactorTag">
+        UPDATE t_r_actor_tag 
+		<set>
+	        <if test="actorId != null">
+	        	actor_id = #{actorId},
+	        </if>
+	        <if test="tagId != null">
+	        	tag_id = #{tagId},
+	        </if>
+	        <if test="tagIdentifying != null">
+	        	tag_identifying = #{tagIdentifying},
+	        </if>
+	        <if test="createTime != null">
+	        	create_time = #{createTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_r_actor_tag WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.RactorTag">
+		SELECT
+			*
+		FROM
+			t_r_actor_tag 
+	    WHERE
+	        id = #{id} 
+	</select>
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="actorId != null">
+				AND actor_id = #{actorId}
+			</if>
+			<if test="tagId != null">
+				AND tag_id = #{tagId}
+			</if>
+			<if test="tagIdentifying != null">
+				AND tag_identifying = #{tagIdentifying}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="actorId != null">
+				AND actor_id = #{actorId}
+			</if>
+			<if test="tagId != null">
+				AND tag_id = #{tagId}
+			</if>
+			<if test="tagIdentifying != null">
+				AND tag_identifying = #{tagIdentifying}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_r_actor_tag
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.RactorTag">
+		SELECT 
+			*
+		FROM
+			t_r_actor_tag 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.RactorTag" resultType="com.fun.likechat.persistence.po.RactorTag">
+		SELECT 
+			*
+		FROM 
+			t_r_actor_tag 
+	    <include refid="whereForPo" />
+	</select>
+</mapper>
+

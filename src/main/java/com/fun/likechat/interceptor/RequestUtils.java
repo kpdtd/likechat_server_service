@@ -2,7 +2,6 @@ package com.fun.likechat.interceptor;
 
 /**
  * 存储线程变量
- * @author chengang
  *
  */
 public class RequestUtils {

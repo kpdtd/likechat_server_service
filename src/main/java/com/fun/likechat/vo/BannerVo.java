@@ -33,6 +33,10 @@ public class BannerVo {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
+	@Override
+    public String toString() {
+	    return "BannerVo [displayName=" + displayName + ", identifying=" + identifying + ", visitUrl=" + visitUrl + ", icon=" + icon + "]";
+    }
 
 
 }

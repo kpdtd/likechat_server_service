@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,19 +12,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fun.likechat.constant.Constant;
+import com.fun.likechat.constant.ErrCodeEnum;
 import com.fun.likechat.interceptor.ActionResult;
 import com.fun.likechat.interceptor.BeatContext;
 import com.fun.likechat.interceptor.RequestUtils;
 import com.fun.likechat.persistence.po.Actor;
 import com.fun.likechat.persistence.po.ActorDynamicPv;
+import com.fun.likechat.persistence.po.DataDictionary;
 import com.fun.likechat.service.ActorDynamicPvService;
 import com.fun.likechat.service.ActorDynamicService;
 import com.fun.likechat.service.ActorService;
+import com.fun.likechat.service.DictionaryService;
 import com.fun.likechat.service.UserAttentionService;
 import com.fun.likechat.util.DateUtil;
 import com.fun.likechat.util.LogFactory;
+import com.fun.likechat.util.SeqIdGenerator;
 import com.fun.likechat.vo.ActorDynamicVo;
 import com.fun.likechat.vo.ActorVo;
+import com.fun.likechat.vo.UserRegisterVo;
 
 @Service
 public class MinePageLogic {
@@ -38,6 +42,9 @@ public class MinePageLogic {
 	ActorDynamicService actorDynamicService;
 	@Autowired
 	ActorDynamicPvService actorDynamicPvService;
+	@Autowired
+	DictionaryService dictionaryService;
+
 	private static final Logger logger = LogFactory.getInstance().getLogger();
 
 	/*
@@ -50,58 +57,67 @@ public class MinePageLogic {
 			Actor actor = actorService.getById(beatContext.getUserid());
 			if(actor != null) {
 				// 转换成vo返回
-				ActorVo vo = new ActorVo();
-				vo.setAge(DateUtil.getPersonAgeByBirthDate(actor.getBirthday()));
-				vo.setIcon(actor.getIcon());
-				vo.setId(actor.getId());
-				vo.setIdcard(actor.getIdcard());
-				vo.setNickname(actor.getNickname());
-				vo.setSex(actor.getSex());
-				vo.setSignature(actor.getSignature());
+				ActorVo vo = toActorVo(actor);
 				return ActionResult.success(vo);
 			}
 			else {
 				logger.debug("无法根据用户ID获取到用户信息");
+				return ActionResult.fail(ErrCodeEnum.userNotExist.getCode(), ErrCodeEnum.userNotExist.getDesc());
 			}
 		}
 		else {
 			logger.debug("没有用户信息");
+			return ActionResult.fail(ErrCodeEnum.getMyPageData_error.getCode(), ErrCodeEnum.getMyPageData_error.getDesc());
 		}
-
-		return ActionResult.fail();
 	}
 
 	/*
-	 * 获取我的信息
+	 * 微信和qq登录注册接口。
 	 */
-	public ActionResult login(String openId, String type) throws Exception {
+	public ActionResult registerAndLogin(UserRegisterVo vo) throws Exception {
 		Actor po = new Actor();
+		String openId = vo.getOpenId();
 		po.setOpenId(openId);
-		List<Actor> actors = actorService.getListByPo(po);
-		//如果不存在，则插入记录
-		if(actors == null || actors.isEmpty()) {
-			String idcard = generateIdcard(8);
-			po.setIdcard(idcard);
-			po.setIdentity(2);//主播都是运营人员添加的；
-			po.setNickname(idcard);//第一次昵称用身份标识代替
-			po.setOpenId(openId);
-			po.setLoginType(type);
-			actorService.insert(po);
-		}
-		else{//存在，则返回用户信息；
-			po = actors.get(0);
+		List<Actor> actors = actorService.getListByPo(po);//先判断openid是否已经注册过。注册过则直接返回
+		if(actors != null &&  !actors.isEmpty()) {
+			ActorVo vos = toActorVo(actors.get(0));
+			return ActionResult.success(vos);
 		}
 		
-		ActorVo vo = new ActorVo();
-		vo.setAge(DateUtil.getPersonAgeByBirthDate(po.getBirthday()));
-		vo.setIcon(po.getIcon());
-		vo.setId(po.getId());
-		vo.setIdcard(po.getIdcard());
-		vo.setNickname(po.getNickname());
-		vo.setSex(po.getSex());
-		vo.setSignature(po.getSignature());
-		return ActionResult.success(vo);
+		//判断nickname是否已经存在，冲突需要提用户变更nickname
+		String nickname = vo.getNickname();
+		po = new Actor();
+		po.setNickname(nickname);
+		actors = actorService.getListByPo(po);//判断nickname是否已经存在
+		if(actors != null &&  !actors.isEmpty()) {
+			nickname = nickname + openId;
+		}
+		
+		// 判断idcard是否冲突，冲突重新生成
+		String idcard = null;
+		for(int i = 0 ; i < 5; i++) {//最多重试5次，防止以后用户增多冲撞几率增大
+			idcard = SeqIdGenerator.getFixLenthString(8);
+			po = new Actor();
+			po.setIdcard(idcard);
+			actors = actorService.getListByPo(po);//判断nickname是否已经存在
+			if(actors == null ||  actors.isEmpty()) {
+				po.setOpenId(openId);
+				po.setNickname(nickname);
+				po.setLoginType(vo.getLoginType());
+				po.setSignature(vo.getSignature());
+				po.setProvince(vo.getProvince());
+				po.setCity(vo.getCity());
+				po.setSex(vo.getSex() == null  || "男".equals(vo.getSex()) ? 1 : 2);
+				po.setState(1);//默认账号生效
+				po.setIdentity(0);//身份标识:0 - 普通用户     1 - 主播（平台主播） 2 - 用户申请的主播', 如果是主播需要在后台进行修改
+				po.setCreateTime(new Date());
+				actorService.insert(po);
+				break;
+			}
+		}
+		return ActionResult.success(toActorVo(po));
 	}
+
 	/*
 	 * 账户余额
 	 */
@@ -125,7 +141,7 @@ public class MinePageLogic {
 			dataMap.put("startPage", startPage);
 			dataMap.put("pageSize", Constant.PAGEZISE);
 			dataMap.put("userId", beatContext.getUserid());
-			dataMap.put("actorId", beatContext.getUserid());
+			dataMap.put("actorId", beatContext.getUserid());// 获取自己的粉丝数，需要用userid当actorid用
 			List<Map<String, Object>> actors = userAttentionService.getUserFriends(dataMap);
 			count = userAttentionService.userFriendsCount(dataMap);
 			int fansCount = userAttentionService.myFansCount(dataMap);
@@ -139,8 +155,8 @@ public class MinePageLogic {
 		}
 		else {
 			logger.debug("没有用户信息");
+			return ActionResult.fail(ErrCodeEnum.userNotExist.getCode(), ErrCodeEnum.userNotExist.getDesc());
 		}
-
 		return ActionResult.fail();
 	}
 
@@ -174,6 +190,7 @@ public class MinePageLogic {
 		}
 		else {
 			logger.debug("没有用户信息");
+			return ActionResult.fail(ErrCodeEnum.userNotExist.getCode(), ErrCodeEnum.userNotExist.getDesc());
 		}
 		return ActionResult.fail();
 	}
@@ -225,8 +242,8 @@ public class MinePageLogic {
 						vo.setSignature(actor.get("signature").toString());
 					}
 					vo.setId((Integer) actor.get("id"));
-					vo.setIdcard((String)actor.get("idcard"));
-					vo.setSex((Integer) actor.get("sex"));
+					vo.setIdcard((String) actor.get("idcard"));
+					vo.setSex(actor.get("sex") != null ? (Integer)actor.get("sex") :  null);
 					list.add(vo);
 				}
 			}
@@ -238,6 +255,34 @@ public class MinePageLogic {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	private ActorVo toActorVo(Actor actor) {
+		try {
+			DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
+			String httpPath = dictionary.getValue();
+			ActorVo vo = new ActorVo();
+			if(actor.getBirthday() != null) {
+				vo.setAge(DateUtil.getPersonAgeByBirthDate((Date) actor.getBirthday()));
+			}
+			if(actor.getIcon() != null) {
+				vo.setIcon(httpPath + actor.getIcon());
+			}
+			if(actor.getNickname() != null) {
+				vo.setNickname(actor.getNickname());
+			}
+			if(actor.getSignature() != null) {
+				vo.setSignature(actor.getSignature());
+			}
+			vo.setId(actor.getId());
+			vo.setIdcard(actor.getIdcard());
+			vo.setSex(actor.getSex());
+			return vo;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private ActionResult toActorDynamicVo(List<Map<String, Object>> actorDynamics, int count, int startPage) {
@@ -258,7 +303,7 @@ public class MinePageLogic {
 					if(actorDynamic.get("signature") != null) {
 						vo.setSignature(actorDynamic.get("signature").toString());
 					}
-					vo.setUpdateTime(actorDynamic.get("update_time").toString());
+					vo.setCreateTime(actorDynamic.get("create_time").toString());
 					vo.setId((Integer) actorDynamic.get("id"));
 					List<String> dynamicUrl = new ArrayList<String>();
 					// 获取到主播动态资源，如图片、语音、视频
@@ -292,15 +337,5 @@ public class MinePageLogic {
 			return true;
 		}
 		return false;
-	}
-
-	private String generateIdcard(int strLength) {
-		Random rm = new Random();
-		// 获得随机数
-		double pross = (1 + rm.nextDouble()) * Math.pow(10, strLength);
-		// 将获得的获得随机数转化为字符串
-		String fixLenthString = String.valueOf(pross);
-		// 返回固定的长度的随机数
-		return fixLenthString.substring(1, strLength + 1);
 	}
 }

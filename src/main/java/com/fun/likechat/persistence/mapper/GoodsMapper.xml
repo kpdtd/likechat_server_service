@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.GoodsMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.Goods" type="com.fun.likechat.po.Goods">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="subname" column="subname"/>
+		<result property="info" column="info"/>
+		<result property="pic" column="pic"/>
+		<result property="price" column="price"/>
+		<result property="displayPrice" column="display_price"/>
+		<result property="type" column="type"/>
+		<result property="discountPirce" column="discount_pirce"/>
+		<result property="displayDiscountPrice" column="display_discount_price"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,name,subname,info,pic,price,display_price,type,discount_pirce,display_discount_price,create_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_goods (
+        	id,
+        	name,
+        	subname,
+        	info,
+        	pic,
+        	price,
+        	display_price,
+        	type,
+        	discount_pirce,
+        	display_discount_price,
+        	create_time
+        ) VALUES (
+        	#{id},
+        	#{name},
+        	#{subname},
+        	#{info},
+        	#{pic},
+        	#{price},
+        	#{displayPrice},
+        	#{type},
+        	#{discountPirce},
+        	#{displayDiscountPrice},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.Goods">
+        UPDATE t_goods 
+		<set>
+	        <if test="name != null">
+	        	name = #{name},
+	        </if>
+	        <if test="subname != null">
+	        	subname = #{subname},
+	        </if>
+	        <if test="info != null">
+	        	info = #{info},
+	        </if>
+	        <if test="pic != null">
+	        	pic = #{pic},
+	        </if>
+	        <if test="price != null">
+	        	price = #{price},
+	        </if>
+	        <if test="displayPrice != null">
+	        	display_price = #{displayPrice},
+	        </if>
+	        <if test="type != null">
+	        	type = #{type},
+	        </if>
+	        <if test="discountPirce != null">
+	        	discount_pirce = #{discountPirce},
+	        </if>
+	        <if test="displayDiscountPrice != null">
+	        	display_discount_price = #{displayDiscountPrice},
+	        </if>
+	        <if test="createTime != null">
+	        	create_time = #{createTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_goods WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.Goods">
+		SELECT
+			*
+		FROM
+			t_goods 
+	    WHERE
+	        id = #{id} 
+	</select>
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="subname != null">
+				AND subname = #{subname}
+			</if>
+			<if test="info != null">
+				AND info = #{info}
+			</if>
+			<if test="pic != null">
+				AND pic = #{pic}
+			</if>
+			<if test="price != null">
+				AND price = #{price}
+			</if>
+			<if test="displayPrice != null">
+				AND display_price = #{displayPrice}
+			</if>
+			<if test="type != null">
+				AND type = #{type}
+			</if>
+			<if test="discountPirce != null">
+				AND discount_pirce = #{discountPirce}
+			</if>
+			<if test="displayDiscountPrice != null">
+				AND display_discount_price = #{displayDiscountPrice}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="subname != null">
+				AND subname = #{subname}
+			</if>
+			<if test="info != null">
+				AND info = #{info}
+			</if>
+			<if test="pic != null">
+				AND pic = #{pic}
+			</if>
+			<if test="price != null">
+				AND price = #{price}
+			</if>
+			<if test="displayPrice != null">
+				AND display_price = #{displayPrice}
+			</if>
+			<if test="type != null">
+				AND type = #{type}
+			</if>
+			<if test="discountPirce != null">
+				AND discount_pirce = #{discountPirce}
+			</if>
+			<if test="displayDiscountPrice != null">
+				AND display_discount_price = #{displayDiscountPrice}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_goods
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.Goods">
+		SELECT 
+			*
+		FROM
+			t_goods 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.Goods" resultType="com.fun.likechat.persistence.po.Goods">
+		SELECT 
+			*
+		FROM 
+			t_goods 
+	    <include refid="whereForPo" />
+	</select>
+</mapper>
+

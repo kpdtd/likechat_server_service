@@ -133,7 +133,7 @@
 		b.* 
 		FROM
 		t_user_attention a, t_actor b
-		where a.user_id=#{userId} and a.actor_id=b.id order by a.update_time desc
+		where a.user_id=#{userId} and a.actor_id=b.id order by a.id desc
 		<if test="pageSize > 0">
 			limit #{startPage}, #{pageSize}
 		</if>
@@ -151,7 +151,7 @@
 		b.* 
 		FROM
 		t_user_attention a, t_actor b
-		where a.actor_id=#{actorId} and a.user_id=b.id order by a.update_time desc
+		where a.actor_id=#{actorId} and a.user_id=b.id order by a.id desc
 		<if test="pageSize > 0">
 			limit #{startPage}, #{pageSize}
 		</if>

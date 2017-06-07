@@ -19,7 +19,6 @@ import com.fun.likechat.util.LogFactory;
 public abstract class BaseController {
 	
 	private static final Logger logger = LogFactory.getInstance().getLogger();
-	   protected HttpServletRequest req = null;
 	    
 	    protected HttpServletRequest request;
 	    protected HttpServletResponse response;
@@ -68,7 +67,7 @@ public abstract class BaseController {
         try {
             writer = response.getWriter();
             writer.write(respData);
-            writer.flush();
+//            writer.flush();//应该不用，spring会自动做。印象中加了这个在大文件的时候好像会有问题
         }
         catch(IOException e) {
             e.printStackTrace();

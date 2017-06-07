@@ -12,7 +12,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,actor_id,content,price,create_time,update_time
+		id,actor_id,type,content,price,page_view,create_time,update_time
 	    ]]>
 	</sql>
 
@@ -21,15 +21,19 @@
         INSERT INTO t_actor_dynamic (
         	id,
         	actor_id,
+        	type,
         	content,
         	price,
+        	page_view,
         	create_time,
         	update_time
         ) VALUES (
         	#{id},
         	#{actorId},
+        	#{	type},
         	#{content},
         	#{price},
+        	#{pageView},
         	#{createTime},
         	#{updateTime}
         )
@@ -47,6 +51,9 @@
 			</if>
 			<if test="price != null">
 				price = #{price},
+			</if>
+			<if test="pageView != null">
+				page_view = #{pageView},
 			</if>
 			<if test="createTime != null">
 				create_time = #{createTime},
@@ -82,11 +89,17 @@
 			<if test="actorId != null">
 				AND actor_id = #{actorId}
 			</if>
+			<if test="type != null">
+				AND type = #{type}
+			</if>
 			<if test="content != null">
 				AND content = #{content}
 			</if>
 			<if test="price != null">
 				AND price = #{price}
+			</if>
+			<if test="pageView != null">
+				AND page_view = #{pageView}
 			</if>
 			<if test="startTime != null">
 	       	<![CDATA[
@@ -98,9 +111,6 @@
 				AND create_time < #{endTime}
 			]]>
 			</if>
-			<if test="updateTime != null">
-				AND update_time = #{updateTime}
-			</if>
 		</where>
 	</sql>
 
@@ -111,6 +121,9 @@
 			</if>
 			<if test="actorId != null">
 				AND actor_id = #{actorId}
+			</if>
+			<if test="type != null">
+				AND type = #{type}
 			</if>
 			<if test="content != null">
 				AND content = #{content}
@@ -144,66 +157,73 @@
 		t_actor_dynamic
 		<include refid="whereForPo" />
 	</select>
-	<select id="getNewestDynamic" parameterType="java.util.Map"
-		resultType="java.util.Map">
+	<select id="getNewestDynamic" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
-		b.nickname,b.icon,b.signature,a.update_time,a.content,a.id 
+		b.nickname,b.icon,b.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
 		FROM
 		t_actor_dynamic a, t_actor b
-		where a.actor_id=b.id 
+		where a.actor_id=b.id
 		<if test="actorId > 0">
-			and a.actor_id=#{actorId} 
+			and a.actor_id=#{actorId}
 		</if>
-		order by a.update_time desc 
+		order by a.create_time desc
 		<if test="pageSize > 0">
 			limit #{startPage}, #{pageSize}
 		</if>
 	</select>
-	<select id="newestDynamicCount" parameterType="java.util.Map"
-		resultType="int">
-		SELECT count(a.id) 
+	<select id="newestDynamicCount" parameterType="java.util.Map" resultType="int">
+		SELECT count(a.id)
 		FROM
 		t_actor_dynamic a, t_actor b
-		where a.actor_id=b.id 
+		where a.actor_id=b.id
 		<if test="actorId > 0">
-			and a.actor_id=#{actorId} 
+			and a.actor_id=#{actorId}
 		</if>
 	</select>
-	<select id="getHotDynamic" parameterType="java.util.Map"
-		resultType="java.util.Map">
+	<select id="getHotDynamic" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
-		b.nickname,b.icon,b.signature,a.update_time,a.content,a.id 
+		b.nickname,b.icon,b.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
 		FROM
 		t_actor_dynamic a, t_actor b
-		where a.actor_id=b.id order by a.update_time desc
+		where a.actor_id=b.id order by
+		a.page_view desc
 		<if test="pageSize > 0">
 			limit #{startPage}, #{pageSize}
 		</if>
 	</select>
 	<select id="hotDynamicCount" parameterType="java.util.Map"
 		resultType="int">
-		SELECT count(a.id) 
+		SELECT count(a.id)
 		FROM
 		t_actor_dynamic a, t_actor b
-		where a.actor_id=b.id   
+		where a.actor_id=b.id
 	</select>
 	<select id="getAttentionDynamic" parameterType="java.util.Map"
 		resultType="java.util.Map">
-		SELECT c.nickname,c.icon,c.signature,a.update_time,a.content,a.id 
+		SELECT c.nickname,c.icon,c.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
 		FROM
-		t_actor_dynamic a,t_user_attention b,t_actor c where a.actor_id=b.actor_id 
+		t_actor_dynamic a,t_user_attention b,t_actor c where
+		a.actor_id=b.actor_id
 		and a.actor_id=c.id and b.user_id=#{userId}
 		order by a.update_time desc
 		<if test="pageSize > 0">
 			limit #{startPage}, #{pageSize}
 		</if>
 	</select>
-	<select id="attentionDynamicCount" parameterType="java.util.Map"
-		resultType="int">
+	<select id="attentionDynamicCount" parameterType="java.util.Map" resultType="int">
 		SELECT count(a.id)
 		FROM
-		t_actor_dynamic a,t_user_attention b,t_actor c where a.actor_id=b.actor_id 
-		and a.actor_id=c.id 
+		t_actor_dynamic a,t_user_attention
+		b,t_actor c where a.actor_id=b.actor_id
+		and a.actor_id=c.id
+	</select>
+	
+	<select id="newestOneDynamic"   resultType="com.fun.likechat.persistence.po.ActorDynamic">
+		select a.*  from t_actor_dynamic a  where a.actor_id = #{actorId}   order by a.id limit 1
+	</select>
+	
+	<select id="addDynamicPageView" >
+		UPDATE t_actor_dynamic SET page_view=page_view + 1 WHERE id=#{id}
 	</select>
 </mapper>
 

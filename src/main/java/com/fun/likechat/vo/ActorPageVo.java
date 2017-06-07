@@ -22,8 +22,13 @@ public class ActorPageVo {
 	private String signature;//个性签名
 	private String introduction;//自我介绍
 	
+	private Integer voiceSec;
+	private String videoFaceUrl;
+	
 	private String price;//资费价格（整数）转成 --》 1.5币/分
 	private String callTime;//通话时长
+	
+	private Boolean isAttention;//是否已经关注，如果未登陆，点击关注应该进入登陆页面。如果已经登陆，当此属性为true，图标应显示红色
 	
 	
 	
@@ -156,6 +161,14 @@ public class ActorPageVo {
 
 	public void setCallTime(String callTime) {
 		this.callTime = callTime;
+	}
+
+	public Boolean getIsAttention() {
+		return isAttention;
+	}
+
+	public void setIsAttention(Boolean isAttention) {
+		this.isAttention = isAttention;
 	}
 	
 }

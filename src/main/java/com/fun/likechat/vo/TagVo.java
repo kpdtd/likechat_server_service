@@ -23,6 +23,9 @@ public class TagVo {
 	public void setPic(String pic) {
 		this.pic = pic;
 	}
-	
+	@Override
+    public String toString() {
+	    return "TagVo [identifying=" + identifying + ", tagName=" + tagName + ", pic=" + pic + "]";
+    }
 }
 
