@@ -22,7 +22,7 @@ public class ActorPageVo {
 	private String signature;//个性签名
 	private String introduction;//自我介绍
 	
-	private Integer voiceSec;
+	private Integer voiceSec;//
 	private String videoFaceUrl;
 	
 	private String price;//资费价格（整数）转成 --》 1.5币/分

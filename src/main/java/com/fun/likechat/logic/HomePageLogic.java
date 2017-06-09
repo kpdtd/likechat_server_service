@@ -138,6 +138,7 @@ public class HomePageLogic {
     		vo.setAge(DateUtil.getPersonAgeByBirthDate(po.getBirthday()));
     		vo.setIcon(httpPath + po.getIcon());
     		vo.setSignature(po.getSignature());
+    		vo.setToken(po.getOpenId());
     		vos.add(vo);
     	}
     	return vos;
@@ -164,6 +165,7 @@ public class HomePageLogic {
     		vo.setAge(DateUtil.getPersonAgeByBirthDate(po.getBirthday()));
     		vo.setIcon(httpPath + po.getIcon());
     		vo.setSignature(po.getSignature());
+    		vo.setToken(po.getOpenId());
     		vos.add(vo);
     	}
     	return vos;

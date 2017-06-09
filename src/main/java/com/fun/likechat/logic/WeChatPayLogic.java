@@ -89,9 +89,11 @@ public class WeChatPayLogic {
 					//创建预付费订单
 					createOrder(vo);//存储到t_account_detail表中
 					
-					
-					11WeChatUnifiedOrderReturnVo vo = JsonHelper.toObject(resutlJson, WeChatUnifiedOrderReturnVo.class);
-					return ActionResult.success(vo);
+					/**
+					 * 未完成返回的协商。应该重新处理下面的逻辑，暂时为打包修正
+					 */
+					WeChatUnifiedOrderReturnVo vo1 = JsonHelper.toObject(resutlJson, WeChatUnifiedOrderReturnVo.class);
+					return ActionResult.success(vo1);
 				}
 			}
 			else {
@@ -99,7 +101,7 @@ public class WeChatPayLogic {
 			}
 		}
 		catch(Exception e) {
-			logger.error("微信订单号[" + out_trade_no + "]统一下单异常：xml=", e);
+			logger.error("微信订单号[" + vo.getOutTradeNo() + "]统一下单异常：xml=", e);
 		}
 		return ActionResult.fail(ErrCodeEnum.wechatpay_error.getCode(), ErrCodeEnum.wechatpay_error.getDesc());
 	}

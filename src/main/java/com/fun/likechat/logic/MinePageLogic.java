@@ -19,11 +19,13 @@ import com.fun.likechat.interceptor.RequestUtils;
 import com.fun.likechat.persistence.po.Actor;
 import com.fun.likechat.persistence.po.ActorDynamicPv;
 import com.fun.likechat.persistence.po.DataDictionary;
+import com.fun.likechat.persistence.po.YunxinAccid;
 import com.fun.likechat.service.ActorDynamicPvService;
 import com.fun.likechat.service.ActorDynamicService;
 import com.fun.likechat.service.ActorService;
 import com.fun.likechat.service.DictionaryService;
 import com.fun.likechat.service.UserAttentionService;
+import com.fun.likechat.service.YunxinAccidService;
 import com.fun.likechat.util.DateUtil;
 import com.fun.likechat.util.LogFactory;
 import com.fun.likechat.util.SeqIdGenerator;
@@ -42,6 +44,10 @@ public class MinePageLogic {
 	ActorDynamicService actorDynamicService;
 	@Autowired
 	ActorDynamicPvService actorDynamicPvService;
+	@Autowired
+	YunXinLogic YunXinLogic;
+	@Autowired
+	YunxinAccidService yunxinAccidService;
 	@Autowired
 	DictionaryService dictionaryService;
 
@@ -115,6 +121,13 @@ public class MinePageLogic {
 				break;
 			}
 		}
+		/**
+		 * 06-09 新增：创建云信id。原来是打算用一个取一个。
+		 */
+		YunxinAccid yx = yunxinAccidService.getByOpenId(openId);
+		if(yx != null) {
+			YunXinLogic.createAccid(po);
+		}
 		return ActionResult.success(toActorVo(po));
 	}
 
@@ -141,9 +154,11 @@ public class MinePageLogic {
 			dataMap.put("startPage", startPage);
 			dataMap.put("pageSize", Constant.PAGEZISE);
 			dataMap.put("userId", beatContext.getUserid());
-			dataMap.put("actorId", beatContext.getUserid());// 获取自己的粉丝数，需要用userid当actorid用
+
 			List<Map<String, Object>> actors = userAttentionService.getUserFriends(dataMap);
 			count = userAttentionService.userFriendsCount(dataMap);
+			dataMap.remove("userId");//获取我的粉丝数时，需要将userId清理掉。同时将userId当做actorId使用
+			dataMap.put("actorId", beatContext.getUserid());// 获取自己的粉丝数，需要用userid当actorid用
 			int fansCount = userAttentionService.myFansCount(dataMap);
 			// 封装返回的对象
 			Map<String, Object> returnMap = new HashMap<>();
@@ -151,13 +166,12 @@ public class MinePageLogic {
 			returnMap.put("fansCount", fansCount);
 			returnMap.put("dataList", toActorVo(actors));
 			// 返回
-			ActionResult.success(returnMap, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
+			return ActionResult.success(returnMap, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
 		}
 		else {
 			logger.debug("没有用户信息");
 			return ActionResult.fail(ErrCodeEnum.userNotExist.getCode(), ErrCodeEnum.userNotExist.getDesc());
 		}
-		return ActionResult.fail();
 	}
 
 	/*
@@ -176,9 +190,11 @@ public class MinePageLogic {
 			dataMap.put("startPage", startPage);
 			dataMap.put("pageSize", Constant.PAGEZISE);
 			dataMap.put("actorId", beatContext.getUserid());
-			dataMap.put("userId", beatContext.getUserid());
 			List<Map<String, Object>> actors = userAttentionService.getMyFans(dataMap);
 			count = userAttentionService.myFansCount(dataMap);
+			
+			dataMap.remove("actorId");
+			dataMap.put("userId", beatContext.getUserid());
 			int attentionCount = userAttentionService.userFriendsCount(dataMap);
 			// 封装返回的对象
 			Map<String, Object> returnMap = new HashMap<>();
@@ -186,13 +202,12 @@ public class MinePageLogic {
 			returnMap.put("fansCount", count);
 			returnMap.put("dataList", toActorVo(actors));
 			// 返回
-			ActionResult.success(returnMap, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
+			return ActionResult.success(returnMap, startPage + Constant.PAGEZISE, isNextPage(Constant.PAGEZISE, count, startPage));
 		}
 		else {
 			logger.debug("没有用户信息");
 			return ActionResult.fail(ErrCodeEnum.userNotExist.getCode(), ErrCodeEnum.userNotExist.getDesc());
 		}
-		return ActionResult.fail();
 	}
 
 	/*
@@ -226,6 +241,8 @@ public class MinePageLogic {
 		List<ActorVo> list = new ArrayList<>();
 		try {
 			if(actors != null && actors.size() > 0) {
+				DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
+				String httpPath = dictionary.getValue();
 				for(Map<String, Object> actor : actors) {
 					// 封装返回的vo
 					ActorVo vo = new ActorVo();
@@ -233,7 +250,7 @@ public class MinePageLogic {
 						vo.setAge(DateUtil.getPersonAgeByBirthDate((Date) actor.get("birthday")));
 					}
 					if(actor.get("icon") != null) {
-						vo.setIcon(actor.get("icon").toString());
+						vo.setIcon(httpPath + actor.get("icon").toString());
 					}
 					if(actor.get("nickname") != null) {
 						vo.setNickname(actor.get("nickname").toString());
@@ -244,6 +261,7 @@ public class MinePageLogic {
 					vo.setId((Integer) actor.get("id"));
 					vo.setIdcard((String) actor.get("idcard"));
 					vo.setSex(actor.get("sex") != null ? (Integer)actor.get("sex") :  null);
+					vo.setToken(actor.getOpenId());
 					list.add(vo);
 				}
 			}
@@ -277,6 +295,7 @@ public class MinePageLogic {
 			vo.setId(actor.getId());
 			vo.setIdcard(actor.getIdcard());
 			vo.setSex(actor.getSex());
+			vo.setToken(actor.getOpenId());
 			return vo;
 		}
 		catch(Exception e) {

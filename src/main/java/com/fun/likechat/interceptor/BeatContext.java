@@ -43,6 +43,11 @@ public class BeatContext {
 	private int userid;
 	
 	/**
+	 * 用户ID
+	 */
+	private String  openId;
+	
+	/**
 	 * 用户对象
 	 */
 	//private UserInfoData user;
@@ -290,5 +295,13 @@ public class BeatContext {
 //    public void setHeader(HeaderData header) {
 //        this.header = header;
 //    }
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
 
 }

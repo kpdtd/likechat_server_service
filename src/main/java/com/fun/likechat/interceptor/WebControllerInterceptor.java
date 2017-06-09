@@ -40,6 +40,14 @@ public class WebControllerInterceptor extends HandlerInterceptorAdapter {
         RequestUtils.bindBeatContextToCurrentThread(context);
         context.setRequest(request);
         context.setResponse(response);
+        System.out.println("@@@@@@@"+request.getHeader("userId"));
+        System.out.println("@@@@@@@"+ request.getHeader("openId"));
+        if(request.getHeader("userId") != null && !"".equals(request.getHeader("userId"))) {
+        	context.setUserid(Integer.parseInt(request.getHeader("userId")));
+        }
+        if(request.getHeader("openId") != null && !"".equals(request.getHeader("openId"))) {
+        	context.setOpenId(request.getHeader("openId"));
+        }
         context.setRequestBody(null);
         String noSign = request.getParameter("noEncode");
 

@@ -79,17 +79,22 @@ public class FindPageLogic {
 				//我的实现：
 				//1：获取关注的主播列表
 				List<Map<String, Object>> actorList = userAttentionService.getUserFriends(dataMap);
+				List<Map<String, Object>> actorListtemp = userAttentionService.getUserFriends(dataMap);
 				count  = userAttentionService.userFriendsCount(dataMap);
 				//2：循环获取主播的最新关注数据-- order by id desc limit 1
 				for(Map<String, Object> mapPo : actorList) {
 					ActorDynamic ad = actorDynamicService.getNewestOneDynamic((Integer)mapPo.get("id"));
-					mapPo.put("type", ad.getType());
-					mapPo.put("page_view", ad.getPageView());
-					mapPo.put("create_time", ad.getCreateTime());
-					mapPo.put("content", ad.getContent());
-					mapPo.put("id", ad.getId());
+					if(ad != null) {
+						mapPo.put("type", ad.getType());
+						mapPo.put("price", ad.getPrice());
+						mapPo.put("page_view", ad.getPageView());
+						mapPo.put("create_time", ad.getCreateTime());
+						mapPo.put("content", ad.getContent());
+						mapPo.put("id", ad.getId());
+						actorListtemp.add(mapPo);
+					}
 				}
-				return toVo(actorList, count, startPage);
+				return toVo(actorListtemp, actorListtemp.size() , 0);//这里有个隐形bug，主播超过10个，则不会显示，永远只显示10条。并且会有下一页
 			} else {
 				logger.debug("没有用户信息");
 				return ActionResult.fail(ErrCodeEnum.getMyPageData_error.getCode(), ErrCodeEnum.getMyPageData_error.getDesc());
@@ -101,6 +106,9 @@ public class FindPageLogic {
 	private ActionResult toVo(List<Map<String, Object>> actorDynamics, int count, int startPage) {
 		try {
 			if (actorDynamics != null && actorDynamics.size() > 0) {
+				DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
+				String httpPath = dictionary.getValue();
+				List<ActorDynamicVo> voList = new ArrayList<ActorDynamicVo>();
 				for (Map<String, Object> actorDynamic : actorDynamics) {
 					// 封装返回的vo
 					ActorDynamicVo vo = new ActorDynamicVo();
@@ -108,7 +116,7 @@ public class FindPageLogic {
 						vo.setContent(actorDynamic.get("content").toString());
 					}
 					if (actorDynamic.get("icon") != null) {
-						vo.setImgUrl(actorDynamic.get("icon").toString());
+						vo.setImgUrl(httpPath + actorDynamic.get("icon").toString());
 					}
 					if (actorDynamic.get("nickname") != null) {
 						vo.setNickname(actorDynamic.get("nickname").toString());
@@ -142,15 +150,14 @@ public class FindPageLogic {
 					adpv.setDynamicId(Integer.parseInt(actorDynamic.get("id").toString()));
 					List<ActorDynamicPv> actorDynamicPvs = actorDynamicPvService.getListByPo(adpv);
 					if (actorDynamicPvs != null && actorDynamicPvs.size() > 0) {
-						DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
-						String httpPath = dictionary.getValue();
 						for (ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
 							dynamicUrlList.add(httpPath + actorDynamicPv.getSavePath());
 						}
 					}
 					vo.setDynamicUrl(dynamicUrlList);
-					return ActionResult.success(vo, startPage + Constant.FIND_PAGEZISE, isNextPage(Constant.FIND_PAGEZISE, count, startPage));
+					voList.add(vo);
 				}
+				return ActionResult.success(voList, startPage + Constant.FIND_PAGEZISE, isNextPage(Constant.FIND_PAGEZISE, count, startPage));
 			}else {
 				logger.debug("没有动态数据");
 				return ActionResult.success();
