@@ -20,16 +20,7 @@ public abstract class BaseController {
 	
 	private static final Logger logger = LogFactory.getInstance().getLogger();
 	    
-	    protected HttpServletRequest request;
-	    protected HttpServletResponse response;
-	    protected HttpSession session;
-
-    @ModelAttribute
-    public void setReqAndRes(HttpServletRequest request, HttpServletResponse response) {
-        this.request = request;
-        this.response = response;
-        this.session = request.getSession();
-    }
+//    public void setReqAndRes(HttpServletRequest request, HttpServletResponse response) {
 
     
 	/**
@@ -60,7 +51,7 @@ public abstract class BaseController {
      * 将数据信息写到客户端
      * @param resStr
      */
-    protected void writerToClient(String respData) {
+    protected void writerToClient(String respData, HttpServletRequest request, HttpServletResponse response) {
         logger.debug("页面数据"+respData);
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = null;

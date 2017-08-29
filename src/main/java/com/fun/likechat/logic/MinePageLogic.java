@@ -1,5 +1,8 @@
 package com.fun.likechat.logic;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +14,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.util.Base64;
 import com.fun.likechat.constant.Constant;
 import com.fun.likechat.constant.ErrCodeEnum;
 import com.fun.likechat.interceptor.ActionResult;
@@ -27,6 +31,7 @@ import com.fun.likechat.service.DictionaryService;
 import com.fun.likechat.service.UserAttentionService;
 import com.fun.likechat.service.YunxinAccidService;
 import com.fun.likechat.util.DateUtil;
+import com.fun.likechat.util.FileUtil;
 import com.fun.likechat.util.LogFactory;
 import com.fun.likechat.util.SeqIdGenerator;
 import com.fun.likechat.vo.ActorDynamicVo;
@@ -78,44 +83,127 @@ public class MinePageLogic {
 	}
 
 	/*
+	 * 更新我的信息
+	 */
+	public ActionResult updateMineInfo(ActorVo vo) throws Exception {
+		// 获取用户信息
+		BeatContext beatContext = RequestUtils.getCurrent();
+		if(beatContext != null && beatContext.getUserid() > 0) {
+			Actor actor = actorService.getById(beatContext.getUserid());
+			if(actor != null && vo != null) {
+				//判断昵称是否唯一，唯一则可以更新
+				if(StringUtils.isNotEmpty(vo.getNickname()) ) {
+					if(!vo.getNickname().equals(actor.getNickname())) {//不相等才去数据库判断是否重复
+						Actor ta = new Actor();
+						ta.setNickname(vo.getNickname());
+						List<Actor> alist = actorService.getListByPo(ta);
+						if(alist != null && !alist.isEmpty()) {
+							return ActionResult.fail(ErrCodeEnum.userNickNameExist.getCode(), ErrCodeEnum.userNickNameExist.getDesc()); 
+						}
+						actor.setNickname(vo.getNickname());
+					}
+				}
+
+				// 如果头像不为空，则更新头像
+				if(StringUtils.isNotEmpty(vo.getIcon()) && StringUtils.isNotEmpty(vo.getIconName())) {
+					FileOutputStream out = null;
+					try {
+						String fileName = System.currentTimeMillis() + "." + vo.getIconName().substring(vo.getIconName().lastIndexOf(".") + 1);
+						DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH);
+						String rootPath = FileUtil.createFilePath(dictionary.getValue());//返回一个日期文件夹，不含数据字典前缀
+						String imgPath = dictionary.getValue() + File.separator + rootPath + File.separator + fileName;
+						out = new FileOutputStream(imgPath);
+						byte[] buffer = Base64.base64ToByteArray(vo.getIcon());
+						out.write(buffer);
+						actor.setIcon(rootPath + File.separator + fileName);
+					}
+					catch(FileNotFoundException e) {
+						e.printStackTrace();
+					}
+					finally {
+						if(out != null) {
+							out.close();
+						}
+					}
+				}
+				//更新性别(不用判断)
+				if(vo.getSex() != null && (vo.getSex() == 1 || vo.getSex() ==2)) {
+					actor.setSex(vo.getSex());
+				}
+				
+				//年龄,传过来的是YYYY-MM-DD
+				if(StringUtils.isNotEmpty(vo.getAge())) {
+					actor.setBirthday(DateUtil.parseStringToDate(vo.getAge(), DateUtil.DATE_FORMAT_SHORT));
+				}
+				//签名-signature  
+				if(StringUtils.isNotEmpty(vo.getSignature())) {
+					actor.setSignature(vo.getSignature());
+				}
+				// 城市 
+				if(StringUtils.isNotEmpty(vo.getCity())) {
+					actor.setCity(vo.getCity());
+				}
+				actorService.update(actor);
+				return ActionResult.success();
+			}
+			else {
+				logger.debug("无法根据用户ID获取到用户信息");
+				return ActionResult.fail(ErrCodeEnum.userNotExist.getCode(), ErrCodeEnum.userNotExist.getDesc());
+			}
+		}
+		else {
+			logger.debug("没有用户信息");
+			return ActionResult.fail(ErrCodeEnum.getMyPageData_error.getCode(), ErrCodeEnum.getMyPageData_error.getDesc());
+		}
+	}
+
+	/*
 	 * 微信和qq登录注册接口。
 	 */
 	public ActionResult registerAndLogin(UserRegisterVo vo) throws Exception {
 		Actor po = new Actor();
 		String openId = vo.getOpenId();
 		po.setOpenId(openId);
-		List<Actor> actors = actorService.getListByPo(po);//先判断openid是否已经注册过。注册过则直接返回
-		if(actors != null &&  !actors.isEmpty()) {
+		List<Actor> actors = actorService.getListByPo(po);// 先判断openid是否已经注册过。注册过则直接返回
+		if(actors != null && !actors.isEmpty()) {
 			ActorVo vos = toActorVo(actors.get(0));
+			
+			/**
+			 * 增加检查，没有云信accid也应该同步下
+			 */
+			YunxinAccid yx = yunxinAccidService.getByOpenId(openId);
+			if(yx == null) {
+				YunXinLogic.createAccid(po);
+			}
 			return ActionResult.success(vos);
 		}
-		
-		//判断nickname是否已经存在，冲突需要提用户变更nickname
+
+		// 判断nickname是否已经存在，冲突需要提用户变更nickname
 		String nickname = vo.getNickname();
 		po = new Actor();
 		po.setNickname(nickname);
-		actors = actorService.getListByPo(po);//判断nickname是否已经存在
-		if(actors != null &&  !actors.isEmpty()) {
+		actors = actorService.getListByPo(po);// 判断nickname是否已经存在
+		if(actors != null && !actors.isEmpty()) {
 			nickname = nickname + openId;
 		}
-		
+
 		// 判断idcard是否冲突，冲突重新生成
 		String idcard = null;
-		for(int i = 0 ; i < 5; i++) {//最多重试5次，防止以后用户增多冲撞几率增大
+		for(int i = 0; i < 5; i++) {// 最多重试5次，防止以后用户增多冲撞几率增大
 			idcard = SeqIdGenerator.getFixLenthString(8);
 			po = new Actor();
 			po.setIdcard(idcard);
-			actors = actorService.getListByPo(po);//判断nickname是否已经存在
-			if(actors == null ||  actors.isEmpty()) {
+			actors = actorService.getListByPo(po);// 判断idcard是否已经存在
+			if(actors == null || actors.isEmpty()) {
 				po.setOpenId(openId);
 				po.setNickname(nickname);
 				po.setLoginType(vo.getLoginType());
 				po.setSignature(vo.getSignature());
 				po.setProvince(vo.getProvince());
 				po.setCity(vo.getCity());
-				po.setSex(vo.getSex() == null  || "男".equals(vo.getSex()) ? 1 : 2);
-				po.setState(1);//默认账号生效
-				po.setIdentity(0);//身份标识:0 - 普通用户     1 - 主播（平台主播） 2 - 用户申请的主播', 如果是主播需要在后台进行修改
+				po.setSex(vo.getSex() == null || "男".equals(vo.getSex()) ? 1 : 2);
+				po.setState(1);// 默认账号生效
+				po.setIdentity(0);// 身份标识:0 - 普通用户 1 - 主播（平台主播） 2 - 用户申请的主播', 如果是主播需要在后台进行修改
 				po.setCreateTime(new Date());
 				actorService.insert(po);
 				break;
@@ -125,7 +213,7 @@ public class MinePageLogic {
 		 * 06-09 新增：创建云信id。原来是打算用一个取一个。
 		 */
 		YunxinAccid yx = yunxinAccidService.getByOpenId(openId);
-		if(yx != null) {
+		if(yx == null) {
 			YunXinLogic.createAccid(po);
 		}
 		return ActionResult.success(toActorVo(po));
@@ -157,7 +245,7 @@ public class MinePageLogic {
 
 			List<Map<String, Object>> actors = userAttentionService.getUserFriends(dataMap);
 			count = userAttentionService.userFriendsCount(dataMap);
-			dataMap.remove("userId");//获取我的粉丝数时，需要将userId清理掉。同时将userId当做actorId使用
+			dataMap.remove("userId");// 获取我的粉丝数时，需要将userId清理掉。同时将userId当做actorId使用
 			dataMap.put("actorId", beatContext.getUserid());// 获取自己的粉丝数，需要用userid当actorid用
 			int fansCount = userAttentionService.myFansCount(dataMap);
 			// 封装返回的对象
@@ -192,7 +280,7 @@ public class MinePageLogic {
 			dataMap.put("actorId", beatContext.getUserid());
 			List<Map<String, Object>> actors = userAttentionService.getMyFans(dataMap);
 			count = userAttentionService.myFansCount(dataMap);
-			
+
 			dataMap.remove("actorId");
 			dataMap.put("userId", beatContext.getUserid());
 			int attentionCount = userAttentionService.userFriendsCount(dataMap);
@@ -260,8 +348,8 @@ public class MinePageLogic {
 					}
 					vo.setId((Integer) actor.get("id"));
 					vo.setIdcard((String) actor.get("idcard"));
-					vo.setSex(actor.get("sex") != null ? (Integer)actor.get("sex") :  null);
-					vo.setToken(actor.getOpenId());
+					vo.setSex(actor.get("sex") != null ? (Integer) actor.get("sex") : null);
+					vo.setToken(actor.get("open_id").toString());
 					list.add(vo);
 				}
 			}
@@ -307,6 +395,8 @@ public class MinePageLogic {
 	private ActionResult toActorDynamicVo(List<Map<String, Object>> actorDynamics, int count, int startPage) {
 		try {
 			if(actorDynamics != null && actorDynamics.size() > 0) {
+				DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
+				String httpPath = dictionary.getValue();
 				for(Map<String, Object> actorDynamic : actorDynamics) {
 					// 封装返回的vo
 					ActorDynamicVo vo = new ActorDynamicVo();
@@ -314,7 +404,7 @@ public class MinePageLogic {
 						vo.setContent(actorDynamic.get("content").toString());
 					}
 					if(actorDynamic.get("icon") != null) {
-						vo.setImgUrl(actorDynamic.get("icon").toString());
+						vo.setImgUrl(httpPath + actorDynamic.get("icon").toString());
 					}
 					if(actorDynamic.get("nickname") != null) {
 						vo.setNickname(actorDynamic.get("nickname").toString());
@@ -331,8 +421,16 @@ public class MinePageLogic {
 					List<ActorDynamicPv> actorDynamicPvs = actorDynamicPvService.getListByPo(adpv);
 					if(actorDynamicPvs != null && actorDynamicPvs.size() > 0) {
 						for(ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
-							dynamicUrl.add(actorDynamicPv.getSavePath());
+							dynamicUrl.add(httpPath + actorDynamicPv.getSavePath());
 							vo.setDynamicType(actorDynamicPv.getType());
+						}
+
+						// 单独处理音视频的时长和 视频的封面字段，如果是音视频，每个动态下只有一条记录
+						if(actorDynamicPvs.size() == 1 && (actorDynamicPvs.get(0).getType() == 1 || actorDynamicPvs.get(0).getType() == 3)) {// 类型为1-视频、3-语音才可能有值
+							vo.setVoiceSec(actorDynamicPvs.get(0).getSecond());
+							if(StringUtils.isNotEmpty(actorDynamicPvs.get(0).getVideoCover())) {
+								vo.setVideoFaceUrl(httpPath + actorDynamicPvs.get(0).getVideoCover());
+							}
 						}
 					}
 					vo.setDynamicUrl(dynamicUrl);

@@ -187,6 +187,7 @@ public class HomePageLogic {
     	// 获取主播最新的8张照片
     	Map<String, Object> condition = new HashMap<String, Object>();
     	condition.put("actorId", id);
+    	condition.put("type", 2);
     	condition.put("limit", 8);
     	List<ActorDynamicPv> adpvs = actorDynamicPvService.getLimitListByMap(condition);
     	List<String> picList = new ArrayList<String>();//照片地址存储list
@@ -211,10 +212,16 @@ public class HomePageLogic {
     	apvo.setAttention(actor.getAttention() == null ? "0" : String.valueOf(actor.getAttention()));
     	//语音秀地址  和  8张最新照片地址
     	apvo.setVideoUrl(httpPath + actor.getVideoShow());//换成可以访问的http地址
+//    	apvo.setVoiceSec(getDuration()); 先不处理了。客户端也可以不展示
     	apvo.setPicList(picList);//照片地址列表
     	// 
     	apvo.setIntroduction(actor.getIntroduction());
-    	apvo.setPrice(actor.getPrice() == null ? "0币/分钟" : String.valueOf(actor.getPrice()) + "币/分钟");//缺少价格和币的转换，也可以直接录入币的价格
+    	apvo.setPrice(actor.getPrice() == null ? "0币/分" : String.valueOf(actor.getPrice()) + "币/分");//db直接录入币的价格
+    	//获取数据字典里的平台价格：
+    	dictionary = dictionaryService.getDicByKey("PLATFORM_PRICE");
+		String platformPrice = dictionary.getValue();
+    	apvo.setPlatformPrice(platformPrice+"币/分");
+    	apvo.setTotalPrice((actor.getPrice() + Integer.parseInt(platformPrice)) + "币/分"); 
     	apvo.setIsAttention(false);//先赋值false，下面在判断是否已经关注
     	// 返回是否已经关注此主播；
     	try {
@@ -231,7 +238,7 @@ public class HomePageLogic {
         	}
         }
         catch(Exception e) {
-	        // 不需要处理
+	        System.out.println("不需要处理的异常，用户不登录也可以看到主播vo");
         }
     	return apvo;
     }

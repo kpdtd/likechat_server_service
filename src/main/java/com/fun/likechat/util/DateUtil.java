@@ -130,6 +130,18 @@ public class DateUtil {
 		cal.add(Calendar.DAY_OF_YEAR, days);
 		return cal.getTime();
 	}
+	
+	/**
+	 * 给定时间N天后
+	 * @param days
+	 * @return
+	 */
+	public static Date afterNDaysDate(Date date, int days) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_YEAR, days);
+		return cal.getTime();
+	}
 
 	public static Date afterNSecondsDate(int seconds) {
 		Calendar cal = Calendar.getInstance();
@@ -243,6 +255,17 @@ public class DateUtil {
 			return false;
 		}
 	}
+	
+	// 比较两个字符串格式日期大小,带格式的日期
+	public static boolean isBefore(Date date1, Date date2) {
+		try {
+			return date1.before(date2);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	/**
 	 * 根据出生日期获取人的年龄
@@ -307,12 +330,30 @@ public class DateUtil {
         String day = sf.format(date);
         return day.equals(nowDay);
     }
+    
+    /**
+     * 时间差多少天的计算：
+     * 通过时间秒毫秒数判断两个时间的间隔--转化为天（用于查看vip剩余天数）
+     * 	  这种通过秒来计算的天数有不到24小时会有误差；还有另外一种负杂的方式计算
+     * 		http://www.cnblogs.com/0201zcr/p/5000977.html
+     * @param date1：如今天
+     * @param date2：未来一个时间，顺序反了会出现负值
+     * @return
+     */
+    public static int differentDaysByMillisecond(Date date1,Date date2)
+    {
+        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+        return days;
+    }
 
 	public static void main(String args[]) throws ParseException {
-		System.out.println(parseDateToString(new Date(),DATE_FORMAT_MONTH_DAY_HOUR));
-		System.out.println(isNow(parseStringToDate("2017-05-18 23:35:19",DATE_FORMAT_FULL)));
-		
-		System.out.println("今天" + "05-18 23:35".substring(5));
+//		System.out.println(parseDateToString(new Date(),DATE_FORMAT_MONTH_DAY_HOUR));
+//		System.out.println(isNow(parseStringToDate("2017-05-18 23:35:19",DATE_FORMAT_FULL)));
+//		
+//		System.out.println("今天" + "05-18 23:35".substring(5));
+		System.out.println(afterNDaysDate(3));
+		System.out.println(afterNDaysDate(getFirstDayOfNextMonth(),3));
+		System.out.println(isBefore(new Date(), new Date()));
 
 	}
 

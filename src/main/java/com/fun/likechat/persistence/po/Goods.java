@@ -4,16 +4,17 @@ import java.util.*;
 
 public class Goods {
 	private Integer id;
-	private String name;
-	private String subname;
-	private String info;
-	private String pic;
-	private Integer price;
-	private String displayPrice;
-	private Integer type;
-	private Integer discountPirce;
-	private String displayDiscountPrice;
-	private java.util.Date createTime;
+	private String name;//商品名称  如：10金币
+	private String subname;//商品子名称：预留
+	private Integer value;//商品面值数字：（根据类型填入不同值 ，如果10金币 这里对应数字10  ；如果2-会员，这个值标识会员等级。
+	private Integer giveValue;//赠送面值：买10金币送10金币 ，这里填入10，购买时后台自动填入10
+	private String info;//商品信息
+	private String pic;//商品图片
+	private Integer price;//商品价格
+	private Integer vipPrice;//vip价格
+	private Integer type;//商品类型： 1-hi币  2-会员
+	private Integer activeTime;//
+	private java.util.Date createTime;//
 	
 	public void setId(Integer value) {
 		this.id = value;
@@ -36,6 +37,20 @@ public class Goods {
 	public String getSubname() {
 		return this.subname;
 	}
+	public void setValue(Integer value) {
+		this.value = value;
+	}
+	
+	public Integer getValue() {
+		return this.value;
+	}
+	public void setGiveValue(Integer value) {
+		this.giveValue = value;
+	}
+	
+	public Integer getGiveValue() {
+		return this.giveValue;
+	}
 	public void setInfo(String value) {
 		this.info = value;
 	}
@@ -57,12 +72,12 @@ public class Goods {
 	public Integer getPrice() {
 		return this.price;
 	}
-	public void setDisplayPrice(String value) {
-		this.displayPrice = value;
+	public void setVipPrice(Integer value) {
+		this.vipPrice = value;
 	}
 	
-	public String getDisplayPrice() {
-		return this.displayPrice;
+	public Integer getVipPrice() {
+		return this.vipPrice;
 	}
 	public void setType(Integer value) {
 		this.type = value;
@@ -71,20 +86,7 @@ public class Goods {
 	public Integer getType() {
 		return this.type;
 	}
-	public void setDiscountPirce(Integer value) {
-		this.discountPirce = value;
-	}
-	
-	public Integer getDiscountPirce() {
-		return this.discountPirce;
-	}
-	public void setDisplayDiscountPrice(String value) {
-		this.displayDiscountPrice = value;
-	}
-	
-	public String getDisplayDiscountPrice() {
-		return this.displayDiscountPrice;
-	}
+
 	public void setCreateTime(java.util.Date value) {
 		this.createTime = value;
 	}
@@ -92,5 +94,14 @@ public class Goods {
 	public java.util.Date getCreateTime() {
 		return this.createTime;
 	}
+
+	public Integer getActiveTime() {
+		return activeTime;
+	}
+
+	public void setActiveTime(Integer activeTime) {
+		this.activeTime = activeTime;
+	}
+
 }
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author suntao
@@ -40,6 +42,26 @@ public class FileUtil {
 		String saveDir = String.valueOf(videoId / 1000);
 		return saveDir;
 	}
+	 
+		/**
+		 * 
+		 * @param systemPath
+		 *            系统配置路径
+		 * @return
+		 * @throws Exception
+		 */
+		public static String createFilePath(String systemPath) throws Exception {
+			if (StringUtils.isBlank(systemPath)) {
+				throw new Exception("未配置系统路径");
+			}
+			String extPrefix = new java.text.SimpleDateFormat("yyyyMMdd").format(new Date());
+			File file = new File(systemPath + File.separator + extPrefix);
+
+			if (file != null && (!file.exists())) {
+				file.mkdirs();
+			}
+			return extPrefix;
+		}
 	
 	/**
 	 * 方法描述:

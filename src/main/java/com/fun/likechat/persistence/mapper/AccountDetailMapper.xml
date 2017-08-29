@@ -46,6 +46,7 @@
         	payer,
         	payee,
         	state,
+        	causes,
         	create_time,
         	update_time
         ) VALUES (
@@ -62,6 +63,7 @@
         	#{payer},
         	#{payee},
         	#{state},
+        	#{causes},
         	#{createTime},
         	#{updateTime}
         )
@@ -106,6 +108,9 @@
 	        </if>
 	        <if test="state != null">
 	        	state = #{state},
+	        </if>
+	        <if test="causes != null">
+	        	causes = #{causes},
 	        </if>
 	        <if test="createTime != null">
 	        	create_time = #{createTime},

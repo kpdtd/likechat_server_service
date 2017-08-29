@@ -18,6 +18,8 @@ public enum ErrCodeEnum {
 	userInfo_error(8010,"登录失败,用户信息错误"),
 	userNickNameExist(8002,"该昵称已经存在"),
 	userNotExist(8001,"该用户不存在"),
+	userInsufficientBalance_error(8011,"您的余额不足,请充值"),
+	userNotExistCallRecord_error(8012,"未能找到通话记录"),
 	
 	//云信
 	yunxinCreateAccid_error(7001,"创建云信用户失败，请重新请求"),

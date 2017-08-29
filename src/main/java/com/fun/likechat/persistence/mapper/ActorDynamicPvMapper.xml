@@ -18,7 +18,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,actor_id,dynamic_id,type,save_path,price,create_time
+		id,actor_id,dynamic_id,type,save_path,price,second,video_cover,create_time
 	    ]]>
 	</sql>
 
@@ -31,6 +31,8 @@
         	type,
         	save_path,
         	price,
+        	second,
+        	video_cover,
         	create_time
         ) VALUES (
         	#{id},
@@ -39,6 +41,8 @@
         	#{type},
         	#{savePath},
         	#{price},
+        	#{second},
+        	#{videoCover},
         	#{createTime}
         )
     ]]>
@@ -61,6 +65,12 @@
 	        </if>
 	        <if test="price != null">
 	        	price = #{price},
+	        </if>
+	        <if test="second != null">
+	        	second = #{second},
+	        </if>
+	        <if test="videoCover != null">
+	        	video_cover = #{videoCover},
 	        </if>
 	        <if test="createTime != null">
 	        	create_time = #{createTime}
@@ -105,6 +115,12 @@
 			<if test="price != null">
 				AND price = #{price}
 			</if>
+			<if test="second != null">
+				AND second = #{second}
+			</if>
+			<if test="videoCover != null">
+				AND video_cover = #{videoCover}
+			</if>
 			<if test="startTime != null">
 	       	<![CDATA[
 				AND create_time >= #{startTime} 
@@ -137,6 +153,12 @@
 			</if>
 			<if test="price != null">
 				AND price = #{price}
+			</if>
+			<if test="second != null">
+				AND second = #{second}
+			</if>
+			<if test="videoCover != null">
+				AND video_cover = #{videoCover}
 			</if>
 		</where>
 	</sql>	

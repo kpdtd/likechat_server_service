@@ -8,13 +8,14 @@
 		<result property="id" column="id"/>
 		<result property="name" column="name"/>
 		<result property="subname" column="subname"/>
+		<result property="value" column="value"/>
+		<result property="giveValue" column="give_value"/>
 		<result property="info" column="info"/>
 		<result property="pic" column="pic"/>
 		<result property="price" column="price"/>
-		<result property="displayPrice" column="display_price"/>
+		<result property="vipPrice" column="vip_price"/>
 		<result property="type" column="type"/>
-		<result property="discountPirce" column="discount_pirce"/>
-		<result property="displayDiscountPrice" column="display_discount_price"/>
+		<result property="activeTime" column="active_time"/>
 		<result property="createTime" column="create_time"/>
 	</resultMap>
 	-->
@@ -22,7 +23,7 @@
 	<!-- 查询公用抽取的列 -->
 	<sql id="columns_all">
 	    <![CDATA[
-		id,name,subname,info,pic,price,display_price,type,discount_pirce,display_discount_price,create_time
+		id,name,subname,value,give_value,info,pic,price,vip_price,type,active_time,create_time
 	    ]]>
 	</sql>
 
@@ -32,25 +33,27 @@
         	id,
         	name,
         	subname,
+        	value,
+        	give_value,
         	info,
         	pic,
         	price,
-        	display_price,
+        	vip_price,
         	type,
-        	discount_pirce,
-        	display_discount_price,
+        	active_time,
         	create_time
         ) VALUES (
         	#{id},
         	#{name},
         	#{subname},
+        	#{value},
+        	#{giveValue},
         	#{info},
         	#{pic},
         	#{price},
-        	#{displayPrice},
+        	#{vipPrice},
         	#{type},
-        	#{discountPirce},
-        	#{displayDiscountPrice},
+        	#{activeTime},
         	#{createTime}
         )
     ]]>
@@ -65,6 +68,12 @@
 	        <if test="subname != null">
 	        	subname = #{subname},
 	        </if>
+	        <if test="value != null">
+	        	value = #{value},
+	        </if>
+	        <if test="giveValue != null">
+	        	give_value = #{giveValue},
+	        </if>
 	        <if test="info != null">
 	        	info = #{info},
 	        </if>
@@ -74,17 +83,14 @@
 	        <if test="price != null">
 	        	price = #{price},
 	        </if>
-	        <if test="displayPrice != null">
-	        	display_price = #{displayPrice},
+	        <if test="vipPrice != null">
+	        	vip_price = #{vipPrice},
 	        </if>
 	        <if test="type != null">
 	        	type = #{type},
 	        </if>
-	        <if test="discountPirce != null">
-	        	discount_pirce = #{discountPirce},
-	        </if>
-	        <if test="displayDiscountPrice != null">
-	        	display_discount_price = #{displayDiscountPrice},
+	        <if test="activeTime != null">
+	        	active_time = #{activeTime},
 	        </if>
 	        <if test="createTime != null">
 	        	create_time = #{createTime}
@@ -120,6 +126,12 @@
 			<if test="subname != null">
 				AND subname = #{subname}
 			</if>
+			<if test="value != null">
+				AND value = #{value}
+			</if>
+			<if test="giveValue != null">
+				AND give_value = #{giveValue}
+			</if>
 			<if test="info != null">
 				AND info = #{info}
 			</if>
@@ -129,17 +141,14 @@
 			<if test="price != null">
 				AND price = #{price}
 			</if>
-			<if test="displayPrice != null">
-				AND display_price = #{displayPrice}
+			<if test="vipPrice != null">
+				AND vip_price = #{vipPrice}
 			</if>
 			<if test="type != null">
 				AND type = #{type}
 			</if>
-			<if test="discountPirce != null">
-				AND discount_pirce = #{discountPirce}
-			</if>
-			<if test="displayDiscountPrice != null">
-				AND display_discount_price = #{displayDiscountPrice}
+			<if test="activeTime != null">
+				AND active_time = #{activeTime}
 			</if>
 			<if test="startTime != null">
 	       	<![CDATA[
@@ -165,6 +174,12 @@
 			<if test="subname != null">
 				AND subname = #{subname}
 			</if>
+			<if test="value != null">
+				AND value = #{value}
+			</if>
+			<if test="giveValue != null">
+				AND give_value = #{giveValue}
+			</if>
 			<if test="info != null">
 				AND info = #{info}
 			</if>
@@ -174,17 +189,11 @@
 			<if test="price != null">
 				AND price = #{price}
 			</if>
-			<if test="displayPrice != null">
-				AND display_price = #{displayPrice}
+			<if test="vipPrice != null">
+				AND vip_price = #{vipPrice}
 			</if>
 			<if test="type != null">
 				AND type = #{type}
-			</if>
-			<if test="discountPirce != null">
-				AND discount_pirce = #{discountPirce}
-			</if>
-			<if test="displayDiscountPrice != null">
-				AND display_discount_price = #{displayDiscountPrice}
 			</if>
 		</where>
 	</sql>	
@@ -209,6 +218,7 @@
 		FROM 
 			t_goods 
 	    <include refid="whereForPo" />
+	    order by value 
 	</select>
 </mapper>
 

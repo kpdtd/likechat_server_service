@@ -55,11 +55,26 @@ public class YunXinLogic {
 					//{ "code":200, "info":{"token":"xx","accid":"xx","name":"xx"}  }注意：云信返回的accid可能和传过去的参数不一样 ，估计是因为云信解决重复的原因
 					String yxResult = YXHttpClient.createAccid(openId, actor.getNickname(), icon, openId);
 					Map<String , Object> map = JsonHelper.toMap(yxResult);
+					System.out.println("OOOpenId：["+ openId+"]的用户，请求云信创建Accid结果："+ yxResult);
 					if(map != null && map.get("code") != null && Integer.parseInt(map.get("code").toString()) == 200) {
 						YunxinAccid po = new YunxinAccid();
 						Map<String,String> yx =  (Map)map.get("info");
+						po.setOpenid(openId);
 						po.setAccid(yx.get("accid"));
 						po.setToken(yx.get("token"));
+						po.setCreateTime(new Date());
+						yunxinAccidService.insert(po);//成功则入库
+						return ActionResult.success(po);
+					}
+					else if(map != null && map.get("code") != null && Integer.parseInt(map.get("code").toString()) == 414) {
+						/**
+						 * 将来优化，应该从云信获取。
+						 * 前面已经判断过十分存在
+						 */
+						YunxinAccid po = new YunxinAccid();
+						po.setOpenid(actor.getOpenId());
+						po.setAccid(actor.getOpenId());
+						po.setToken(actor.getOpenId());
 						po.setCreateTime(new Date());
 						yunxinAccidService.insert(po);//成功则入库
 						return ActionResult.success(po);
@@ -88,9 +103,11 @@ public class YunXinLogic {
 				//{ "code":200, "info":{"token":"xx","accid":"xx","name":"xx"}  }注意：云信返回的accid可能和传过去的参数不一样 ，估计是因为云信解决重复的原因
 				String yxResult = YXHttpClient.createAccid(actor.getOpenId(), actor.getNickname(), actor.getIcon(), actor.getOpenId());
 				Map<String , Object> map = JsonHelper.toMap(yxResult);
+				System.out.println("OpenId为：["+ actor.getOpenId()+"]的用户，请求云信创建Accid结果："+ yxResult);
 				if(map != null && map.get("code") != null && Integer.parseInt(map.get("code").toString()) == 200) {
 					YunxinAccid po = new YunxinAccid();
 					Map<String,String> yx =  (Map)map.get("info");
+					po.setOpenid(actor.getOpenId());
 					po.setAccid(yx.get("accid"));
 					po.setToken(yx.get("token"));
 					po.setCreateTime(new Date());

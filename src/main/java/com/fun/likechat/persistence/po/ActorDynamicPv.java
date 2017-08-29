@@ -9,6 +9,8 @@ public class ActorDynamicPv {
 	private Integer type;
 	private String savePath;
 	private Integer price;
+	private Integer second;
+	private String videoCover;
 	private java.util.Date createTime;
 	
 	public void setId(Integer value) {
@@ -52,6 +54,20 @@ public class ActorDynamicPv {
 	
 	public Integer getPrice() {
 		return this.price;
+	}
+	public void setSecond(Integer value) {
+		this.second = value;
+	}
+	
+	public Integer getSecond() {
+		return this.second;
+	}
+	public void setVideoCover(String value) {
+		this.videoCover = value;
+	}
+	
+	public String getVideoCover() {
+		return this.videoCover;
 	}
 	public void setCreateTime(java.util.Date value) {
 		this.createTime = value;

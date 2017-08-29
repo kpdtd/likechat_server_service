@@ -2,6 +2,7 @@ package com.fun.likechat.wechat.data;
 
 public class UnifiedOrderReqData {
 	private String appid;//ok  String(32)	wxd678efh567hg6787	微信开放平台审核通过的应用APPID
+	private String attach;//(否)  附加数据，在查询API和支付通知中原样返回，该字段主要用于商户携带订单的自定义数据
 	private String mch_id;//ok	String(32)	1230000109	微信支付分配的商户号
 	private String nonce_str;//ok 服务器产生 ，防止重复提交  String(32)	5K8264ILTKCH16CQ2502SI8ZNMTM67VS	随机字符串，不长于32位。推荐随机数生成算法
 	private String sign;//ok- (传送的sign参数不参与签名)	String(32)	C380BEC2BFD727A4B6845133519F3AD6	签名，详见签名生成算法
@@ -11,6 +12,7 @@ public class UnifiedOrderReqData {
 	private String spbill_create_ip;//ok  String(16)	123.12.12.123	用户端实际ip
 	private String notify_url;//ok  String(256)	http://www.weixin.qq.com/wxpay/pay.php	接收微信支付异步通知回调地址，通知url必须为直接可访问的url，不能携带参数。
 	private String trade_type;//--ok  String(16)	APP	支付类型
+	private String device_info;//非必须，测试文档用 
 	
 	public String getAppid() {
 		return appid;
@@ -76,5 +78,17 @@ public class UnifiedOrderReqData {
     public String toString() {
 	    return "nifiedOrderReqData [appid=" + appid + ", mch_id=" + mch_id + ", nonce_str=" + nonce_str + ", sign=" + sign + ", body=" + body + ", out_trade_no=" + out_trade_no + ", total_fee=" + total_fee + ", spbill_create_ip=" + spbill_create_ip + ", notify_url=" + notify_url + ", trade_type=" + trade_type + "]";
     }
+	public String getAttach() {
+		return attach;
+	}
+	public void setAttach(String attach) {
+		this.attach = attach;
+	}
+	public String getDevice_info() {
+		return device_info;
+	}
+	public void setDevice_info(String device_info) {
+		this.device_info = device_info;
+	}
 	
 }

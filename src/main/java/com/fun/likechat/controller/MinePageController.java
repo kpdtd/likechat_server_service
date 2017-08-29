@@ -12,8 +12,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.fun.likechat.constant.ErrCodeEnum;
 import com.fun.likechat.interceptor.ActionResult;
 import com.fun.likechat.logic.MinePageLogic;
-import com.fun.likechat.persistence.po.Actor;
 import com.fun.likechat.util.JsonHelper;
+import com.fun.likechat.vo.ActorVo;
 import com.fun.likechat.vo.UserRegisterVo;
 
 /**
@@ -35,6 +35,22 @@ public class MinePageController extends BaseController {
     public @ResponseBody ActionResult getMineInfo() {
         try {
             return minePageLogic.getMineInfo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ActionResult.fail();
+    }
+    
+    /**
+     * 更新个人信息 图片-icon、昵称、性别、年龄、签名-signature 、城市
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "updateMineInfo", method = RequestMethod.POST)
+    public @ResponseBody ActionResult updateMineInfo(@RequestBody String body) {
+        try {
+        	ActorVo vo = JsonHelper.toObject(body, ActorVo.class);
+            return minePageLogic.updateMineInfo(vo);
         } catch (Exception e) {
             e.printStackTrace();
         }

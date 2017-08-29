@@ -16,6 +16,7 @@ public class AccountDetail {
 	private String payer;
 	private String payee;
 	private Integer state;
+	private String causes;
 	private java.util.Date createTime;
 	private java.util.Date updateTime;
 	
@@ -124,5 +125,19 @@ public class AccountDetail {
 	public java.util.Date getUpdateTime() {
 		return this.updateTime;
 	}
+
+	public String getCauses() {
+		return causes;
+	}
+
+	public void setCauses(String causes) {
+		this.causes = causes;
+	}
+
+	@Override
+    public String toString() {
+	    return "AccountDetail [id=" + id + ", actorId=" + actorId + ", openId=" + openId + ", payType=" + payType + ", goodsType=" + goodsType + ", goodsId=" + goodsId + ", goodsCode=" + goodsCode + ", money=" + money + ", outTradeNo=" + outTradeNo + ", tradeNo=" + tradeNo + ", payer=" + payer + ", payee=" + payee + ", state=" + state + ", causes=" + causes + ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
+    }
+	
 }
 
