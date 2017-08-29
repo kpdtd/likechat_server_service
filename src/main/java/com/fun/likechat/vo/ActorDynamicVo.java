@@ -5,6 +5,7 @@ import java.util.List;
 public class ActorDynamicVo {
 
 	private Integer id;//动态ID
+	private Integer actorId;//主播ID
     private String nickname; // 主播昵称
     private String imgUrl;// 主播图片URL
     private String signature;// 主播个性签名
@@ -90,6 +91,12 @@ public class ActorDynamicVo {
 	}
 	public void setVideoFaceUrl(String videoFaceUrl) {
 		this.videoFaceUrl = videoFaceUrl;
+	}
+	public Integer getActorId() {
+		return actorId;
+	}
+	public void setActorId(Integer actorId) {
+		this.actorId = actorId;
 	}
 
 

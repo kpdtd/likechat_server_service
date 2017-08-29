@@ -129,6 +129,7 @@ public class FindPageLogic {
 				for(Map<String, Object> actorDynamic : actorDynamics) {
 					// 封装返回的vo
 					ActorDynamicVo vo = new ActorDynamicVo();
+						vo.setActorId(Integer.parseInt(actorDynamic.get("actorId").toString()));
 					if(actorDynamic.get("content") != null) {
 						vo.setContent(actorDynamic.get("content").toString());
 					}

@@ -159,7 +159,7 @@
 	</select>
 	<select id="getNewestDynamic" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
-		b.nickname,b.icon,b.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
+		b.id as actorId,b.nickname,b.icon,b.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
 		FROM
 		t_actor_dynamic a, t_actor b
 		where a.actor_id=b.id
@@ -182,7 +182,7 @@
 	</select>
 	<select id="getHotDynamic" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
-		b.nickname,b.icon,b.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
+		b.id as actorId,b.nickname,b.icon,b.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
 		FROM
 		t_actor_dynamic a, t_actor b
 		where a.actor_id=b.id order by
@@ -200,7 +200,7 @@
 	</select>
 	<select id="getAttentionDynamic" parameterType="java.util.Map"
 		resultType="java.util.Map">
-		SELECT c.nickname,c.icon,c.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
+		SELECT c.id as actorId, c.nickname,c.icon,c.signature,a.type,a.price,a.page_view,a.create_time,a.content,a.id
 		FROM
 		t_actor_dynamic a,t_user_attention b,t_actor c where
 		a.actor_id=b.actor_id
