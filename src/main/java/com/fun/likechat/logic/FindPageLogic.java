@@ -41,6 +41,22 @@ public class FindPageLogic {
 
 	private static final Logger logger = LogFactory.getInstance().getLogger();
 
+	public ActionResult getActorDynamicList(int actorId, String stamp) throws Exception {
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		int startPage = 0;
+		int count = 0;
+		if (StringUtils.isNotBlank(stamp)) {
+			startPage = Integer.parseInt(stamp);
+		}
+		dataMap.put("actorId", actorId);
+		dataMap.put("startPage", startPage);
+		dataMap.put("pageSize", Constant.FIND_PAGEZISE);
+		List<Map<String, Object>> actorDynamics = null;
+		count = actorDynamicService.newestDynamicCount(dataMap);
+		actorDynamics = actorDynamicService.getNewestDynamic(dataMap);
+		return toVo(actorDynamics, count, startPage);
+		
+	}
 	public ActionResult getFindList(int tag, String stamp) throws Exception {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		int startPage = 0;

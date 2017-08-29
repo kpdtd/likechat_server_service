@@ -22,6 +22,21 @@ public class FindPageController extends BaseController {
     @Autowired
     FindPageLogic FindPageLogic;
 
+    
+    @RequestMapping(value = "getActorDynamicList", method = RequestMethod.POST)
+    public @ResponseBody ActionResult getActorDynamicList(@RequestBody String body) {
+        try {
+            JSONObject json = JsonHelper.toJsonObject(body);
+            int actorId = json.getIntValue("id");
+            String stamp = json.getString("stamp");
+            // 根据条件获取动态列表
+            return FindPageLogic.getActorDynamicList(actorId, stamp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ActionResult.fail();
+    }
+    
     /**
      * 获取动态列表： 
      * 最新：按照时间排序，最新的放在最上面； 
