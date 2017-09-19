@@ -14,6 +14,7 @@ public enum ErrCodeEnum {
 	
 	//支付
 	pay_error(1001,"创建订单失败，请求参数错误"),
+	pay_error_no_found_goods(1002,"没有找到对应的商品"),
 	//用户
 	userInfo_error(8010,"登录失败,用户信息错误"),
 	userNickNameExist(8002,"该昵称已经存在"),

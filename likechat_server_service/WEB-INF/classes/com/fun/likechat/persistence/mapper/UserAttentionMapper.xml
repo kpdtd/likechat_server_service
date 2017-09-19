@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.UserAttentionMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.UserAttention" type="com.fun.likechat.po.UserAttention">
+		<result property="id" column="id"/>
+		<result property="userId" column="user_id"/>
+		<result property="actorId" column="actor_id"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,user_id,actor_id,create_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_user_attention (
+        	id,
+        	user_id,
+        	actor_id,
+        	create_time
+        ) VALUES (
+        	#{id},
+        	#{userId},
+        	#{actorId},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.UserAttention">
+        UPDATE t_user_attention 
+		<set>
+	        <if test="userId != null">
+	        	user_id = #{userId},
+	        </if>
+	        <if test="actorId != null">
+	        	actor_id = #{actorId},
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_user_attention WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.UserAttention">
+		SELECT
+			*
+		FROM
+			t_user_attention 
+	    WHERE
+	        id = #{id} 
+	</select>
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="actorId != null">
+				AND actor_id = #{actorId}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="actorId != null">
+				AND actor_id = #{actorId}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_user_attention
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.UserAttention">
+		SELECT 
+			*
+		FROM
+			t_user_attention 
+	    <include refid="where" />
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.UserAttention" resultType="com.fun.likechat.persistence.po.UserAttention">
+		SELECT 
+			*
+		FROM 
+			t_user_attention 
+	    <include refid="whereForPo" />
+	</select>
+	
+	<delete id="cancelAttention">
+        DELETE FROM t_user_attention WHERE
+        user_id = #{userId} and actor_id = #{actorId}
+	</delete>
+	<select id="getUserFriends" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		b.* 
+		FROM
+		t_user_attention a, t_actor b
+		where a.user_id=#{userId} and a.actor_id=b.id order by a.id desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="userFriendsCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id) 
+		FROM
+		t_user_attention a, t_actor b
+		where a.user_id=#{userId} and a.actor_id=b.id 
+	</select>
+	<select id="getMyFans" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT
+		b.* 
+		FROM
+		t_user_attention a, t_actor b
+		where a.actor_id=#{actorId} and a.user_id=b.id order by a.id desc
+		<if test="pageSize > 0">
+			limit #{startPage}, #{pageSize}
+		</if>
+	</select>
+	<select id="myFansCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(a.id) 
+		FROM
+		t_user_attention a, t_actor b
+		where a.actor_id=#{actorId} and a.user_id=b.id 
+	</select>		
+</mapper>
+

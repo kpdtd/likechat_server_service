@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.YunxinAccidMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.YunxinAccid" type="com.fun.likechat.po.YunxinAccid">
+		<result property="id" column="id"/>
+		<result property="openid" column="openid"/>
+		<result property="accid" column="accid"/>
+		<result property="token" column="token"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,openid,accid,token,create_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT IGNORE INTO t_yunxin_accid (
+        	id,
+        	openid,
+        	accid,
+        	token,
+        	create_time
+        ) VALUES (
+        	#{id},
+        	#{openid},
+        	#{accid},
+        	#{token},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.YunxinAccid">
+        UPDATE t_yunxin_accid 
+		<set>
+	        <if test="openid != null">
+	        	openid = #{openid},
+	        </if>
+	        <if test="accid != null">
+	        	accid = #{accid},
+	        </if>
+	        <if test="token != null">
+	        	token = #{token},
+	        </if>
+	        <if test="createTime != null">
+	        	create_time = #{createTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_yunxin_accid WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.YunxinAccid">
+		SELECT
+			*
+		FROM
+			t_yunxin_accid 
+	    WHERE
+	        id = #{id} 
+	</select>
+	
+	<select id="getByOpenId" resultType="com.fun.likechat.persistence.po.YunxinAccid">
+		SELECT
+			*
+		FROM
+			t_yunxin_accid 
+	    WHERE
+	        openid = #{openid} 
+	</select>
+	
+		<select id="getByAccid" resultType="com.fun.likechat.persistence.po.YunxinAccid">
+		SELECT
+			*
+		FROM
+			t_yunxin_accid 
+	    WHERE
+	        accid = #{accid} 
+	</select>	
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="openid != null">
+				AND openid = #{openid}
+			</if>
+			<if test="accid != null">
+				AND accid = #{accid}
+			</if>
+			<if test="token != null">
+				AND token = #{token}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="openid != null">
+				AND openid = #{openid}
+			</if>
+			<if test="accid != null">
+				AND accid = #{accid}
+			</if>
+			<if test="token != null">
+				AND token = #{token}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_yunxin_accid
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.YunxinAccid">
+		SELECT 
+			*
+		FROM
+			t_yunxin_accid 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.YunxinAccid" resultType="com.fun.likechat.persistence.po.YunxinAccid">
+		SELECT 
+			*
+		FROM 
+			t_yunxin_accid 
+	    <include refid="whereForPo" />
+	</select>
+</mapper>
+

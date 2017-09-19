@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.GoodsMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.Goods" type="com.fun.likechat.po.Goods">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="subname" column="subname"/>
+		<result property="value" column="value"/>
+		<result property="giveValue" column="give_value"/>
+		<result property="info" column="info"/>
+		<result property="pic" column="pic"/>
+		<result property="price" column="price"/>
+		<result property="vipPrice" column="vip_price"/>
+		<result property="type" column="type"/>
+		<result property="activeTime" column="active_time"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,name,subname,value,give_value,info,pic,price,vip_price,type,active_time,create_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_goods (
+        	id,
+        	name,
+        	subname,
+        	value,
+        	give_value,
+        	info,
+        	pic,
+        	price,
+        	vip_price,
+        	type,
+        	active_time,
+        	create_time
+        ) VALUES (
+        	#{id},
+        	#{name},
+        	#{subname},
+        	#{value},
+        	#{giveValue},
+        	#{info},
+        	#{pic},
+        	#{price},
+        	#{vipPrice},
+        	#{type},
+        	#{activeTime},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.Goods">
+        UPDATE t_goods 
+		<set>
+	        <if test="name != null">
+	        	name = #{name},
+	        </if>
+	        <if test="subname != null">
+	        	subname = #{subname},
+	        </if>
+	        <if test="value != null">
+	        	value = #{value},
+	        </if>
+	        <if test="giveValue != null">
+	        	give_value = #{giveValue},
+	        </if>
+	        <if test="info != null">
+	        	info = #{info},
+	        </if>
+	        <if test="pic != null">
+	        	pic = #{pic},
+	        </if>
+	        <if test="price != null">
+	        	price = #{price},
+	        </if>
+	        <if test="vipPrice != null">
+	        	vip_price = #{vipPrice},
+	        </if>
+	        <if test="type != null">
+	        	type = #{type},
+	        </if>
+	        <if test="activeTime != null">
+	        	active_time = #{activeTime},
+	        </if>
+	        <if test="createTime != null">
+	        	create_time = #{createTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_goods WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.Goods">
+		SELECT
+			*
+		FROM
+			t_goods 
+	    WHERE
+	        id = #{id} 
+	</select>
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="subname != null">
+				AND subname = #{subname}
+			</if>
+			<if test="value != null">
+				AND value = #{value}
+			</if>
+			<if test="giveValue != null">
+				AND give_value = #{giveValue}
+			</if>
+			<if test="info != null">
+				AND info = #{info}
+			</if>
+			<if test="pic != null">
+				AND pic = #{pic}
+			</if>
+			<if test="price != null">
+				AND price = #{price}
+			</if>
+			<if test="vipPrice != null">
+				AND vip_price = #{vipPrice}
+			</if>
+			<if test="type != null">
+				AND type = #{type}
+			</if>
+			<if test="activeTime != null">
+				AND active_time = #{activeTime}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="name != null">
+				AND name = #{name}
+			</if>
+			<if test="subname != null">
+				AND subname = #{subname}
+			</if>
+			<if test="value != null">
+				AND value = #{value}
+			</if>
+			<if test="giveValue != null">
+				AND give_value = #{giveValue}
+			</if>
+			<if test="info != null">
+				AND info = #{info}
+			</if>
+			<if test="pic != null">
+				AND pic = #{pic}
+			</if>
+			<if test="price != null">
+				AND price = #{price}
+			</if>
+			<if test="vipPrice != null">
+				AND vip_price = #{vipPrice}
+			</if>
+			<if test="type != null">
+				AND type = #{type}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_goods
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.Goods">
+		SELECT 
+			*
+		FROM
+			t_goods 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.Goods" resultType="com.fun.likechat.persistence.po.Goods">
+		SELECT 
+			*
+		FROM 
+			t_goods 
+	    <include refid="whereForPo" />
+	    order by value 
+	</select>
+</mapper>
+

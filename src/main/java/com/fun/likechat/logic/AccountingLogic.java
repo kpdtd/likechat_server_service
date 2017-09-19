@@ -65,9 +65,9 @@ public class AccountingLogic {
 			AccountVo vo = new AccountVo();
 			if(list != null && !list.isEmpty()) {
 				vo.setUserId(list.get(0).getUserId());
-				vo.setIsvip(list.get(0).getIsvip());
-				vo.setGrade(list.get(0).getGrade());
-				vo.setMoney(list.get(0).getMoney());
+				vo.setIsvip(list.get(0).getIsvip() == null ? 0 : list.get(0).getIsvip());
+				vo.setGrade(list.get(0).getGrade() == null ? 0 : list.get(0).getGrade());
+				vo.setMoney(list.get(0).getMoney() == null ? 0 : list.get(0).getMoney());
 				vo.setVipActiveTime(list.get(0).getVipActiveTime());
 			}
 			return ActionResult.success(vo);
@@ -178,8 +178,18 @@ public class AccountingLogic {
 			po.setState(0);
 			po.setCreateTime(new Date());
 			po.setUpdateTime(new Date());
-			accountDetailService.insert(po);// sql中加入IGNORE 防止重复插入（可以根据实际情况选择：Replace 或者 ON DUPLICATE KEY UPDAT）
-			return ActionResult.success();
+			accountDetailService.insert(po);// sql中加入IGNORE 防止重复插入（可以根据实际情况选择：Replace 或者 ON DUPLICATE KEY UPDAT
+			
+			DataDictionary dictionary = dictionaryService.getDicByKey("ALIPAY_NOTIFY_URL");
+			String notifyUrl = dictionary.getValue();
+			Map<String,String> map = new HashMap<String,String>();
+			if(StringUtils.isNotEmpty(notifyUrl)) {
+				map.put("notifyUrl", notifyUrl);
+			}else{
+				map.put("notifyUrl", "http://114.215.221.15:8080/likechat_server_service/accounting/alipayOderNotify");
+				System.out.println("注意：支付宝异步通知地址在数据字典没有找到，返回一个写死的值");
+			}
+			return ActionResult.success(map);
 		}
 		else {
 			logger.debug("没有用户信息");

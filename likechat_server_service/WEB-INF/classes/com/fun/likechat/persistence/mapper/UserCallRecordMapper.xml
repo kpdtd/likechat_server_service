@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.UserCallRecordMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.UserCallRecord" type="com.fun.likechat.po.UserCallRecord">
+		<result property="id" column="id"/>
+		<result property="userId" column="user_id"/>
+		<result property="actorId" column="actor_id"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="callTime" column="call_time"/>
+		<result property="payment" column="payment"/>
+		<result property="balance" column="balance"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,user_id,actor_id,start_time,end_time,call_time,payment,balance,create_time
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_user_call_record (
+        	id,
+        	user_id,
+        	actor_id,
+        	start_time,
+        	end_time,
+        	call_time,
+        	payment,
+        	balance,
+        	create_time
+        ) VALUES (
+        	#{id},
+        	#{userId},
+        	#{actorId},
+        	#{startTime},
+        	#{endTime},
+        	#{callTime},
+        	#{payment},
+        	#{balance},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.UserCallRecord">
+        UPDATE t_user_call_record 
+		<set>
+	        <if test="userId != null">
+	        	user_id = #{userId},
+	        </if>
+	        <if test="actorId != null">
+	        	actor_id = #{actorId},
+	        </if>
+	        <if test="startTime != null">
+	        	start_time = #{startTime},
+	        </if>
+	        <if test="endTime != null">
+	        	end_time = #{endTime},
+	        </if>
+	        <if test="callTime != null">
+	        	call_time = #{callTime},
+	        </if>
+	        <if test="payment != null">
+	        	payment = #{payment},
+	        </if>
+	        <if test="balance != null">
+	        	balance = #{balance},
+	        </if>
+	        <if test="createTime != null">
+	        	create_time = #{createTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_user_call_record WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.UserCallRecord">
+		SELECT
+			*
+		FROM
+			t_user_call_record 
+	    WHERE
+	        id = #{id} 
+	</select>
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="actorId != null">
+				AND actor_id = #{actorId}
+			</if>
+			<if test="startTime != null">
+				AND start_time = #{startTime}
+			</if>
+			<if test="endTime != null">
+				AND end_time = #{endTime}
+			</if>
+			<if test="callTime != null">
+				AND call_time = #{callTime}
+			</if>
+			<if test="payment != null">
+				AND payment = #{payment}
+			</if>
+			<if test="balance != null">
+				AND balance = #{balance}
+			</if>
+			<if test="startTime != null">
+	       	<![CDATA[
+				AND create_time >= #{startTime} 
+			]]>
+			</if>
+			<if test="endTime != null">
+			<![CDATA[
+				AND create_time < #{endTime}
+			]]>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="actorId != null">
+				AND actor_id = #{actorId}
+			</if>
+			<if test="callTime != null">
+				AND call_time = #{callTime}
+			</if>
+			<if test="payment != null">
+				AND payment = #{payment}
+			</if>
+			<if test="balance != null">
+				AND balance = #{balance}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_user_call_record
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.UserCallRecord">
+		SELECT 
+			*
+		FROM
+			t_user_call_record 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.UserCallRecord" resultType="com.fun.likechat.persistence.po.UserCallRecord">
+		SELECT 
+			*
+		FROM 
+			t_user_call_record 
+	    <include refid="whereForPo" />
+	    order by id desc
+	</select>
+	
+	<select id="getByUserIdActorId"  resultType="com.fun.likechat.persistence.po.UserCallRecord">
+		SELECT 
+			*
+		FROM 
+			t_user_call_record
+		WHERE
+			actor_id = #{actorId} and user_id = #{userId} 
+	    order by id desc limit 1
+	</select>
+</mapper>
+

@@ -95,13 +95,15 @@ public class HomePageController extends BaseController {
 
 	/**
 	 * 主播详情页信息
+	 * 扩展：ljy:根据云信id获取主播信息
 	 */
 	@RequestMapping(value = "getActorPage", method = RequestMethod.POST)
 	public @ResponseBody ActionResult getActorPage(@RequestBody String body) {
 		try {
 			JSONObject json = JsonHelper.toJsonObject(body);
 			int identifying = json.getIntValue("id");// 根据id获取主播信息
-			ActorPageVo vo = homePageLogic.getActorPage(identifying);
+			String accid = json.getString("accid");// 根据云信accid获取主播信息
+			ActorPageVo vo = homePageLogic.getActorPage(identifying, accid);
 			return ActionResult.success(vo);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -31,6 +31,8 @@ public class Actor {
 	private String phone;//手机号
 	private String qq;
 	private String wechat;
+ 	private String concept;//恋爱观
+ 	private String objective;//目的
 	private String creator;
 	private java.util.Date createTime;
 	private java.util.Date updateTime;
@@ -255,6 +257,22 @@ public class Actor {
 
 	public void setIdentity(Integer identity) {
 		this.identity = identity;
+	}
+
+	public String getConcept() {
+		return concept;
+	}
+
+	public void setConcept(String concept) {
+		this.concept = concept;
+	}
+
+	public String getObjective() {
+		return objective;
+	}
+
+	public void setObjective(String objective) {
+		this.objective = objective;
 	}
 }
 

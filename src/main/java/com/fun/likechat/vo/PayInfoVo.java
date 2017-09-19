@@ -5,6 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.fun.likechat.util.JsonHelper;
+
+/**
+ * 支付宝支付订单生成使用的请求参数vo
+ *
+ */
 public class PayInfoVo {
 	public PayInfoVo() {
 		try {
@@ -102,4 +110,19 @@ public class PayInfoVo {
         return fixLenthString.substring(2, strLength + 2);
 	}
 	
+	
+	public static void main(String[] args) {
+		PayInfoVo vo = new PayInfoVo();
+		vo.setActorId(278);
+		vo.setPayType("2");
+		vo.setGoodsId(1);
+		vo.setGoodsType("2");//'1-购买嗨币  2-购买会员',
+		vo.setMoney(100);//单位：分，可以不用填
+		vo.setOpenId("C9EB28C12E43962EA01079FB84203625");
+		vo.setOutTradeNo("test_order_number");
+		vo.setTradeNo("支付平台订单号");
+		JSONObject jsonObject = (JSONObject) JSON.toJSON(vo);
+		System.out.println(jsonObject.toJSONString());
+		System.out.println(jsonObject.toString());
+    }
 }

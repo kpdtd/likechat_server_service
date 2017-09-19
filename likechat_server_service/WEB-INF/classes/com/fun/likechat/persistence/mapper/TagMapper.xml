@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.fun.likechat.persistence.mapper.TagMapper">
+	<!-- 根据情况定制属性列表
+	<resultMap id="RM.Tag" type="com.fun.likechat.po.Tag">
+		<result property="id" column="id"/>
+		<result property="identifying" column="identifying"/>
+		<result property="tagName" column="tagName"/>
+		<result property="pic" column="pic"/>
+		<result property="property" column="property"/>
+		<result property="state" column="state"/>
+		<result property="creator" column="creator"/>
+		<result property="createTime" column="createTime"/>
+	</resultMap>
+	-->
+
+	<!-- 查询公用抽取的列 -->
+	<sql id="columns_all">
+	    <![CDATA[
+		id,identifying,tagName,pic,property,state,creator,createTime
+	    ]]>
+	</sql>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_tag (
+        	id,
+        	identifying,
+        	tagName,
+        	pic,
+        	property,
+        	state,
+        	creator,
+        	createTime
+        ) VALUES (
+        	#{id},
+        	#{identifying},
+        	#{tagName},
+        	#{pic},
+        	#{property},
+        	#{state},
+        	#{creator},
+        	#{createTime}
+        )
+    ]]>
+	</insert>
+
+	<update id="update" parameterType="com.fun.likechat.persistence.po.Tag">
+        UPDATE t_tag 
+		<set>
+	        <if test="identifying != null">
+	        	identifying = #{identifying},
+	        </if>
+			<if test="tagName != null">
+	        	tagName = #{tagName},
+	        </if>	        
+	        <if test="pic != null">
+	        	pic = #{pic},
+	        </if>
+	        <if test="property != null">
+	        	property = #{property},
+	        </if>
+	        <if test="state != null">
+	        	state = #{state},
+	        </if>
+	        <if test="creator != null">
+	        	creator = #{creator},
+	        </if>
+	        <if test="createTime != null">
+	        	createTime = #{createTime}
+	        </if>
+	    </set>
+        WHERE
+	        id = #{id}
+	</update>
+
+	<delete id="deleteById">
+        DELETE FROM t_tag WHERE
+        id = #{id}
+	</delete>
+
+	<select id="getById" resultType="com.fun.likechat.persistence.po.Tag">
+		SELECT
+			*
+		FROM
+			t_tag 
+	    WHERE
+	        id = #{id} 
+	</select>
+
+	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
+	<sql id="where">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="identifying != null">
+				AND identifying = #{identifying}
+			</if>			
+			<if test="tagName != null">
+				AND tagName = #{tagName}
+			</if>
+			<if test="pic != null">
+				AND pic = #{pic}
+			</if>
+			<if test="property != null">
+				AND property = #{property}
+			</if>
+			<if test="state != null">
+				AND state = #{state}
+			</if>
+			<if test="creator != null">
+				AND creator = #{creator}
+			</if>
+			<if test="createTime != null">
+				AND createTime = #{createTime}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="whereForPo">
+		<where>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+			<if test="identifying != null">
+				AND identifying = #{identifying}
+			</if>
+			<if test="tagName != null">
+				AND tagName = #{tagName}
+			</if>
+			<if test="pic != null">
+				AND pic = #{pic}
+			</if>
+			<if test="property != null">
+				AND property = #{property}
+			</if>
+			<if test="state != null">
+				AND state = #{state}
+			</if>
+			<if test="creator != null">
+				AND creator = #{creator}
+			</if>
+		</where>
+	</sql>	
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT count(*) FROM t_tag
+		<include refid="where" />
+	</select>
+
+	<select id="getListByMap" parameterType="java.util.Map" resultType="com.fun.likechat.persistence.po.Tag">
+		SELECT 
+			*
+		FROM
+			t_tag 
+	    <include refid="where" />
+	    ${limit}
+	</select>
+	
+	<select id="getListByPo" parameterType="com.fun.likechat.persistence.po.Tag" resultType="com.fun.likechat.persistence.po.Tag">
+		SELECT 
+			*
+		FROM 
+			t_tag 
+	    <include refid="whereForPo" />
+	</select>
+</mapper>
+

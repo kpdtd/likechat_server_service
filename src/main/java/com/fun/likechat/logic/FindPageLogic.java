@@ -23,6 +23,7 @@ import com.fun.likechat.service.ActorDynamicPvService;
 import com.fun.likechat.service.ActorDynamicService;
 import com.fun.likechat.service.DictionaryService;
 import com.fun.likechat.service.UserAttentionService;
+import com.fun.likechat.util.AudioVideoUtil;
 import com.fun.likechat.util.DateUtil;
 import com.fun.likechat.util.LogFactory;
 import com.fun.likechat.vo.ActorDynamicVo;
@@ -125,6 +126,9 @@ public class FindPageLogic {
 			if(actorDynamics != null && actorDynamics.size() > 0) {
 				DataDictionary dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH_HTTP);
 				String httpPath = dictionary.getValue();
+				 dictionary = dictionaryService.getDicByKey(Constant.D_IMG_SAVE_PATH);
+				String localPath = dictionary.getValue();
+				
 				List<ActorDynamicVo> voList = new ArrayList<ActorDynamicVo>();
 				for(Map<String, Object> actorDynamic : actorDynamics) {
 					// 封装返回的vo
@@ -168,16 +172,17 @@ public class FindPageLogic {
 					adpv.setDynamicId(Integer.parseInt(actorDynamic.get("id").toString()));
 					List<ActorDynamicPv> actorDynamicPvs = actorDynamicPvService.getListByPo(adpv);
 					if(actorDynamicPvs != null && actorDynamicPvs.size() > 0) {
-						for(ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
-							dynamicUrlList.add(httpPath + actorDynamicPv.getSavePath());
-						}
-
 						// 单独处理音视频的时长和 视频的封面字段，如果是音视频，每个动态下只有一条记录
-						if(actorDynamicPvs.size() == 1 && (actorDynamicPvs.get(0).getType() == 1 || actorDynamicPvs.get(0).getType() == 3)) {// 类型为1-视频、3-语音才可能有值
-							vo.setVoiceSec(actorDynamicPvs.get(0).getSecond());
+						if(actorDynamicPvs.get(0).getType() == 1 || actorDynamicPvs.get(0).getType() == 3) {// 类型为1-视频、3-语音才可能有值
+//							vo.setVoiceSec(actorDynamicPvs.get(0).getSecond());//获取播放时长-----需要更换为方法
+							vo.setVoiceSec(AudioVideoUtil.getDuration(localPath + actorDynamicPvs.get(0).getSavePath()));
 							if(StringUtils.isNotEmpty(actorDynamicPvs.get(0).getVideoCover())) {
 								vo.setVideoFaceUrl(httpPath + actorDynamicPvs.get(0).getVideoCover());
 							}
+						}
+						//循环，主要是相册比较多。
+						for(ActorDynamicPv actorDynamicPv : actorDynamicPvs) {
+							dynamicUrlList.add(httpPath + actorDynamicPv.getSavePath());
 						}
 					}
 					vo.setDynamicUrl(dynamicUrlList);

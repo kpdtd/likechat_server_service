@@ -59,8 +59,6 @@
         	phone,
         	qq,
         	wechat,
-        	concept,
-        	objective,
         	creator,
         	create_time,
         	update_time
@@ -93,8 +91,6 @@
         	#{phone},
         	#{qq},
         	#{wechat},
-        	#{concept},
-        	#{objective},
         	#{creator},
         	#{createTime},
         	#{updateTime}
@@ -180,12 +176,6 @@
 			<if test="wechat != null">
 				wechat = #{wechat},
 			</if>
-			<if test="concept != null">
-				concept = #{concept},
-			</if>
-			<if test="objective != null">
-				objective = #{objective},
-			</if>
 			<if test="creator != null">
 				creator = #{creator},
 			</if>
@@ -211,8 +201,7 @@
 		FROM
 		t_actor
 		WHERE
-		id =
-		#{id}
+		id = #{id}
 	</select>
 
 	<!-- 查询条件where,如果有时间范围查询，参数必须是startTime 和 endTime -->
@@ -442,8 +431,7 @@
 		FROM
 		t_actor, t_r_actor_tag
 		WHERE
-		t_r_actor_tag.tag_identifying = #{tagIdentifying} and
-		t_r_actor_tag.actor_id = t_actor.id and
+		t_r_actor_tag.tag_identifying = #{tagIdentifying} and t_r_actor_tag.actor_id = t_actor.id and
 		t_actor.identity = 1
 		ORDER BY
 		RAND() LIMIT ${limit}
